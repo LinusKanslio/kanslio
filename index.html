@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<title>Kanslio.</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Kanslio — AI-assistent för sportföreningars kansli.">
+<meta name="theme-color" content="#F7F1E3">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kanslio">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #F7F1E3;
+    --bg-soft: #FBF7EC;
+    --surface: #FFFFFF;
+    --surface-2: #FBF7ED;
+    --border: #E9E1CB;
+    --border-strong: #DCD2B4;
+    --ink: #16223E;
+    --ink-secondary: #55627D;
+    --ink-muted: #8B93A6;
+    --accent: #2453EB;
+    --accent-strong: #1740B8;
+    --accent-soft: #E3EAFF;
+    --accent-soft-strong: #CBD9FF;
+    --on-accent: #FFFFFF;
+    --good: #17A05B;
+    --good-ink: #106B37;
+    --good-soft: #DEF3E6;
+    --warn: #E29A0C;
+    --warn-ink: #8A5A00;
+    --warn-soft: #FCEEC9;
+    --neutral-dot: #98A2B8;
+    --neutral-ink: #5A6478;
+    --neutral-soft: #EEF0F4;
+    --shadow-sm: 0 1px 2px rgba(22,34,62,.05);
+    --shadow-md: 0 10px 28px rgba(22,34,62,.08);
+    --shadow-lg: 0 18px 44px rgba(22,34,62,.14);
+    --r-lg: 28px;
+    --r-md: 20px;
+    --r-sm: 14px;
+    --r-pill: 999px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --bg: #0D1424;
+      --bg-soft: #101A2E;
+      --surface: #141E34;
+      --surface-2: #18233C;
+      --border: rgba(244,241,231,.09);
+      --border-strong: rgba(244,241,231,.16);
+      --ink: #F4F1E7;
+      --ink-secondary: #AEB6CC;
+      --ink-muted: #7C879E;
+      --accent: #5B8CFF;
+      --accent-strong: #86AAFF;
+      --accent-soft: #1E2C52;
+      --accent-soft-strong: #29406E;
+      --on-accent: #0D1424;
+      --good: #34C481;
+      --good-ink: #8FE3B6;
+      --good-soft: #113322;
+      --warn: #F0AC2E;
+      --warn-ink: #FFD98A;
+      --warn-soft: #3A2E12;
+      --neutral-dot: #8A93AC;
+      --neutral-ink: #C7CEDE;
+      --neutral-soft: #232C44;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+      --shadow-md: 0 10px 28px rgba(0,0,0,.35);
+      --shadow-lg: 0 20px 50px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0D1424;
+    --bg-soft: #101A2E;
+    --surface: #141E34;
+    --surface-2: #18233C;
+    --border: rgba(244,241,231,.09);
+    --border-strong: rgba(244,241,231,.16);
+    --ink: #F4F1E7;
+    --ink-secondary: #AEB6CC;
+    --ink-muted: #7C879E;
+    --accent: #5B8CFF;
+    --accent-strong: #86AAFF;
+    --accent-soft: #1E2C52;
+    --accent-soft-strong: #29406E;
+    --on-accent: #0D1424;
+    --good: #34C481;
+    --good-ink: #8FE3B6;
+    --good-soft: #113322;
+    --warn: #F0AC2E;
+    --warn-ink: #FFD98A;
+    --warn-soft: #3A2E12;
+    --neutral-dot: #8A93AC;
+    --neutral-ink: #C7CEDE;
+    --neutral-soft: #232C44;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+    --shadow-md: 0 10px 28px rgba(0,0,0,.35);
+    --shadow-lg: 0 20px 50px rgba(0,0,0,.5);
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --bg: #F7F1E3; --bg-soft: #FBF7EC; --surface: #FFFFFF; --surface-2: #FBF7ED;
+    --border: #E9E1CB; --border-strong: #DCD2B4; --ink: #16223E; --ink-secondary: #55627D;
+    --ink-muted: #8B93A6; --accent: #2453EB; --accent-strong: #1740B8; --accent-soft: #E3EAFF;
+    --accent-soft-strong: #CBD9FF; --on-accent: #FFFFFF; --good: #17A05B; --good-ink: #106B37;
+    --good-soft: #DEF3E6; --warn: #E29A0C; --warn-ink: #8A5A00; --warn-soft: #FCEEC9;
+    --neutral-dot: #98A2B8; --neutral-ink: #5A6478; --neutral-soft: #EEF0F4;
+    --shadow-sm: 0 1px 2px rgba(22,34,62,.05); --shadow-md: 0 10px 28px rgba(22,34,62,.08);
+    --shadow-lg: 0 18px 44px rgba(22,34,62,.14);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .display {
+    font-family: ui-rounded, "SF Pro Rounded", "SFRounded", "Segoe UI Rounded", ui-sans-serif, system-ui, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0;
+  }
+  button, input { font-family: inherit; }
+  .tabular { font-variant-numeric: tabular-nums; }
+  a { color: inherit; }
+  svg { display: block; }
+
+  ::selection { background: var(--accent-soft-strong); }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* ---------- Layout shell ---------- */
+  .app-shell { min-height: 100vh; display: flex; }
+
+  .sidebar {
+    width: 252px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 14px;
+    background: var(--surface-2);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .logo {
+    display: flex;
+    align-items: baseline;
+    font-size: 21px;
+    font-weight: 800;
+    color: var(--ink);
+    white-space: nowrap;
+    letter-spacing: -0.02em;
+  }
+  .logo .dot { color: var(--accent); }
+  .sidebar .logo { padding: 6px 12px 22px; font-size: 20px; }
+
+  .sidebar-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: none;
+    background: transparent;
+    color: var(--ink-secondary);
+    font-size: 14.5px;
+    font-weight: 600;
+    text-align: left;
+    padding: 9px 10px;
+    border-radius: var(--r-md);
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+  .nav-item:hover { background: var(--surface); color: var(--ink); }
+  .nav-item.active { background: var(--surface); color: var(--accent-strong); box-shadow: var(--shadow-sm); }
+  .nav-icon {
+    width: 30px; height: 30px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-soft); color: var(--ink-muted);
+    transition: background .15s ease, color .15s ease;
+  }
+  .nav-item.active .nav-icon { background: var(--accent-soft); color: var(--accent-strong); }
+  .nav-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nav-badge {
+    background: var(--accent); color: var(--on-accent);
+    font-size: 11px; font-weight: 800; min-width: 19px; height: 19px; padding: 0 5px;
+    border-radius: var(--r-pill); display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .sidebar-foot { display: flex; align-items: center; gap: 10px; padding: 12px 8px 4px; border-top: 1px solid var(--border); margin-top: 8px; }
+  .sidebar-foot .who { flex: 1; min-width: 0; }
+  .sidebar-foot .who .name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sidebar-foot .who .role { font-size: 11.5px; color: var(--ink-muted); }
+
+  .main-col { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 28px;
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    backdrop-filter: blur(18px) saturate(1.4);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-pill);
+    padding: 8px 16px;
+    width: 220px;
+    color: var(--ink-muted);
+  }
+  .search input {
+    border: none;
+    background: transparent;
+    outline: none;
+    color: var(--ink);
+    font-size: 14px;
+    width: 100%;
+  }
+  .search input::placeholder { color: var(--ink-muted); }
+  .icon-btn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink-secondary);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: transform .15s ease, background .15s ease, color .15s ease;
+    flex-shrink: 0;
+  }
+  .icon-btn:hover { background: var(--accent-soft); color: var(--accent-strong); transform: translateY(-1px); }
+  .avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--on-accent);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  main { flex: 1; padding: 28px; max-width: 1280px; width: 100%; margin: 0 auto; }
+  .view { display: none; flex-direction: column; gap: 22px; }
+  .view.active { display: flex; }
+
+  .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .page-head h1 { font-size: 30px; color: var(--ink); }
+  .page-head .sub { color: var(--ink-secondary); font-size: 14px; margin-top: 4px; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent); color: var(--on-accent);
+    border: none; padding: 11px 20px; border-radius: var(--r-pill);
+    font-weight: 700; font-size: 14px; cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn-primary:hover { background: var(--accent-strong); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+  /* ---------- Stat cards ---------- */
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  .stat-card { padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; transition: box-shadow .2s ease, transform .2s ease; }
+  .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .stat-card.linkable { cursor: pointer; }
+  .stat-card.linkable:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--accent-soft-strong); }
+  .stat-card-hint {
+    font-size: 12px; font-weight: 700; color: var(--accent-strong); display: flex; align-items: center; gap: 4px;
+    opacity: 0; transition: opacity .15s ease;
+  }
+  .stat-card.linkable:hover .stat-card-hint { opacity: 1; }
+  .stat-top { display: flex; align-items: center; justify-content: space-between; }
+  .stat-icon {
+    width: 38px; height: 38px; border-radius: 12px;
+    background: var(--accent-soft); color: var(--accent-strong);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .delta-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: var(--r-pill);
+  }
+  .delta-chip.good { background: var(--good-soft); color: var(--good-ink); }
+  .delta-chip.neutral { background: var(--neutral-soft); color: var(--neutral-ink); }
+  .delta-chip.warn { background: var(--warn-soft); color: var(--warn-ink); }
+  .stat-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-muted); }
+  .stat-value { font-size: 34px; font-weight: 800; font-family: ui-rounded, "SF Pro Rounded", system-ui, sans-serif; }
+  .stat-value .unit { font-size: 16px; color: var(--ink-secondary); font-weight: 700; margin-left: 4px; }
+  .spark { width: 100%; height: 34px; }
+
+  /* ---------- Content grid ---------- */
+  .content-grid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 16px; align-items: start; }
+  .col-stack { display: flex; flex-direction: column; gap: 16px; }
+  .card-pad { padding: 22px; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .card-head h2 { font-size: 17px; }
+  .card-head .link {
+    font-size: 13px; font-weight: 700; color: var(--accent-strong);
+    background: none; border: none; cursor: pointer; padding: 4px;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .card-head .link:hover { text-decoration: underline; }
+
+  /* ---------- Case rows ---------- */
+  .case-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 10px;
+    border-radius: var(--r-md);
+    transition: background .15s ease;
+    cursor: pointer;
+  }
+  .case-row:hover { background: var(--bg-soft); }
+  .case-main { min-width: 0; }
+  .case-title { font-weight: 700; font-size: 14.5px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .case-client { font-size: 13px; color: var(--ink-muted); margin-top: 2px; }
+  .case-deadline { font-size: 13px; color: var(--ink-secondary); white-space: nowrap; }
+
+  .status-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12.5px; font-weight: 700; padding: 5px 12px; border-radius: var(--r-pill);
+    white-space: nowrap;
+  }
+  .status-chip .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .status-ny { background: var(--neutral-soft); color: var(--neutral-ink); }
+  .status-ny .dot { background: var(--neutral-dot); }
+  .status-pagar { background: var(--accent-soft); color: var(--accent-strong); }
+  .status-pagar .dot { background: var(--accent); }
+  .status-vantar { background: var(--warn-soft); color: var(--warn-ink); }
+  .status-vantar .dot { background: var(--warn); }
+  .status-klar { background: var(--good-soft); color: var(--good-ink); }
+  .status-klar .dot { background: var(--good); }
+
+  .footnote { font-size: 12.5px; color: var(--ink-muted); padding: 10px 10px 0; }
+
+  /* ---------- Agenda / activity ---------- */
+  .agenda-item { display: flex; gap: 12px; padding: 10px 4px; align-items: flex-start; }
+  .agenda-time { width: 52px; flex-shrink: 0; font-size: 12.5px; font-weight: 700; color: var(--ink-muted); padding-top: 2px; }
+  .agenda-dot { width: 9px; height: 9px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .agenda-title { font-size: 14px; font-weight: 600; }
+
+  .activity-item { display: flex; gap: 10px; padding: 9px 4px; align-items: flex-start; }
+  .activity-avatar {
+    width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-strong);
+    font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .activity-text { font-size: 13.5px; color: var(--ink-secondary); }
+  .activity-text b { color: var(--ink); font-weight: 700; }
+  .activity-time { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
+
+  /* ---------- Ärenden tab ---------- */
+  .filter-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .pill-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill-filter {
+    border: 1px solid var(--border); background: var(--surface); color: var(--ink-secondary);
+    font-size: 13.5px; font-weight: 600; padding: 8px 16px; border-radius: var(--r-pill);
+    cursor: pointer; transition: all .15s ease;
+  }
+  .pill-filter:hover { border-color: var(--accent); color: var(--accent-strong); }
+  .pill-filter.active { background: var(--ink); border-color: var(--ink); color: var(--bg-soft); }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .pill-filter.active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  }
+  :root[data-theme="dark"] .pill-filter.active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+
+  .table-wrap { overflow-x: auto; }
+  .table-head {
+    display: grid; grid-template-columns: 2.2fr 1.4fr 1.1fr 1.2fr .9fr;
+    gap: 14px; padding: 0 14px 10px; min-width: 640px;
+    font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .full-row {
+    display: grid; grid-template-columns: 2.2fr 1.4fr 1.1fr 1.2fr .9fr;
+    gap: 14px; align-items: center; padding: 14px; border-radius: var(--r-md); min-width: 640px;
+    transition: background .15s ease;
+  }
+  .full-row:hover { background: var(--bg-soft); }
+  .assignee { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--ink-secondary); }
+  .assignee .mini-avatar {
+    width: 24px; height: 24px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--ink-secondary);
+  }
+
+  /* ---------- Mejl (AI-utkast) ---------- */
+  .mail-hero {
+    display: flex; align-items: center; gap: 18px; padding: 20px 24px; flex-wrap: wrap;
+    background: linear-gradient(135deg, var(--accent-soft), var(--surface));
+    border: 1px solid var(--border); border-radius: var(--r-lg);
+  }
+  .mail-hero-icon {
+    width: 52px; height: 52px; border-radius: 16px; flex-shrink: 0;
+    background: var(--accent); color: var(--on-accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mail-hero-text { flex: 1; min-width: 220px; }
+  .mail-hero-text h2 { font-size: 17px; margin-bottom: 3px; }
+  .mail-hero-text p { margin: 0; font-size: 13.5px; color: var(--ink-secondary); }
+  .mail-source {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 700; color: var(--ink-muted);
+    background: var(--bg-soft); border: 1px solid var(--border);
+    padding: 4px 10px; border-radius: var(--r-pill); white-space: nowrap;
+  }
+
+  /* ---------- Att göra idag ---------- */
+  .todo-row {
+    display: flex; align-items: center; gap: 16px; padding: 16px 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .todo-row:last-child { border-bottom: none; padding-bottom: 4px; }
+  .todo-row:first-child { padding-top: 4px; }
+  .todo-icon {
+    width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .todo-icon-blue { background: var(--accent-soft); color: var(--accent-strong); }
+  .todo-icon-green { background: var(--good-soft); color: var(--good-ink); }
+  .todo-icon-amber { background: var(--warn-soft); color: var(--warn-ink); }
+  .todo-text { flex: 1; min-width: 0; }
+  .todo-title { font-weight: 700; font-size: 15px; }
+  .todo-sub { font-size: 13px; color: var(--ink-secondary); margin-top: 2px; }
+  @media (max-width: 640px) {
+    .todo-row { flex-wrap: wrap; }
+    .todo-row .btn-primary { margin-left: 60px; }
+  }
+
+  .mail-row { border-radius: var(--r-md); padding: 14px 10px; cursor: pointer; transition: background .15s ease; }
+  .mail-row:hover { background: var(--bg-soft); }
+  .mail-row-top { display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 12px; }
+  .mail-from { font-weight: 700; font-size: 14px; }
+  .mail-subject { font-size: 13.5px; color: var(--ink-secondary); margin-top: 1px; }
+  .mail-time { font-size: 12px; color: var(--ink-muted); white-space: nowrap; }
+  .mail-chevron { color: var(--ink-muted); transition: transform .2s ease; flex-shrink: 0; }
+  .mail-row.open .mail-chevron { transform: rotate(90deg); }
+
+  .priority-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 4px 11px; border-radius: var(--r-pill); white-space: nowrap; }
+  .priority-hog { background: var(--warn-soft); color: var(--warn-ink); }
+  .priority-medel { background: var(--accent-soft); color: var(--accent-strong); }
+  .priority-lag { background: var(--neutral-soft); color: var(--neutral-ink); }
+
+  .mail-detail {
+    display: none; margin: 10px 4px 4px; padding: 14px 16px;
+    background: var(--bg-soft); border-radius: var(--r-md); font-size: 13.5px; color: var(--ink); line-height: 1.6;
+  }
+  .mail-row.open .mail-detail { display: block; }
+  .detail-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-muted); margin-bottom: 6px; }
+  .detail-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .btn-ghost {
+    border: 1px solid var(--border); background: var(--surface); color: var(--ink-secondary);
+    font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: var(--r-pill); cursor: pointer;
+    transition: all .15s ease;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent-strong); }
+
+  /* ---------- Fakturor ---------- */
+  .invoice-head {
+    display: grid; grid-template-columns: 2fr 1.1fr 1.2fr 1fr .8fr 24px; gap: 14px; padding: 0 14px 10px; min-width: 680px;
+    font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .invoice-item { border-radius: var(--r-md); cursor: pointer; transition: background .15s ease; }
+  .invoice-item:hover { background: var(--bg-soft); }
+  .invoice-row {
+    display: grid; grid-template-columns: 2fr 1.1fr 1.2fr 1fr .8fr 24px; gap: 14px; align-items: center;
+    padding: 14px; min-width: 680px;
+  }
+  .invoice-amount { font-weight: 700; }
+  .mini-avatar.ai { background: var(--accent-soft); color: var(--accent-strong); border-color: transparent; }
+  .invoice-item.open .mail-chevron { transform: rotate(90deg); }
+  .invoice-item.open .mail-detail { display: block; }
+  .invoice-item .mail-detail { margin: 0 14px 14px; }
+
+  /* ---------- Schemaplanering ---------- */
+  .team-row {
+    display: grid; grid-template-columns: 1.6fr auto auto auto; align-items: center; gap: 14px;
+    padding: 14px 10px; border-radius: var(--r-md); transition: background .15s ease;
+  }
+  .team-row:hover { background: var(--bg-soft); }
+  .team-name { font-weight: 700; font-size: 14.5px; }
+  .team-note { font-size: 13px; color: var(--ink-muted); margin-top: 2px; }
+  .team-meta { font-size: 13.5px; color: var(--ink-secondary); white-space: nowrap; text-align: right; }
+
+  /* ---------- Kalender ---------- */
+  .week-nav { display: flex; align-items: center; gap: 14px; }
+  .week-label { font-weight: 700; font-size: 15px; min-width: 190px; text-align: center; }
+  .week-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+  .day-col { display: flex; flex-direction: column; gap: 10px; }
+  .day-head { text-align: center; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .day-head .name { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-muted); }
+  .day-head .num { font-size: 20px; font-weight: 800; font-family: ui-rounded, system-ui, sans-serif; margin-top: 2px; }
+  .day-head.today .num { color: var(--accent-strong); }
+  .event-block {
+    border-radius: var(--r-sm); padding: 10px 12px; font-size: 12.5px; font-weight: 600;
+    border: 1px solid transparent;
+  }
+  .event-block .time { display: block; font-size: 11px; font-weight: 700; opacity: .75; margin-bottom: 2px; }
+  .event-meeting { background: var(--accent-soft); color: var(--accent-strong); }
+  .event-internal { background: var(--neutral-soft); color: var(--neutral-ink); }
+  .event-deadline { background: var(--warn-soft); color: var(--warn-ink); }
+
+  /* ---------- Rapporter ---------- */
+  .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  .bar-row { display: grid; grid-template-columns: 120px 1fr 40px; align-items: center; gap: 12px; padding: 9px 0; }
+  .bar-row .name { font-size: 13.5px; font-weight: 600; color: var(--ink-secondary); }
+  .bar-track { height: 12px; background: var(--surface-2); border-radius: var(--r-pill); overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: var(--r-pill); transition: width 1s cubic-bezier(.2,.8,.2,1); }
+  .bar-row .count { font-size: 13.5px; font-weight: 700; text-align: right; }
+  .insight { font-size: 13.5px; color: var(--ink-secondary); padding: 14px 16px; background: var(--bg-soft); border-radius: var(--r-md); margin-top: 4px; }
+  .insight b { color: var(--ink); }
+
+  .chart-svg-wrap { position: relative; }
+  .chart-tooltip {
+    position: absolute; pointer-events: none; background: var(--ink); color: var(--bg-soft);
+    font-size: 12px; font-weight: 600; padding: 6px 10px; border-radius: 10px;
+    transform: translate(-50%, -115%); white-space: nowrap; opacity: 0; transition: opacity .12s ease;
+    box-shadow: var(--shadow-md);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .chart-tooltip { background: var(--surface); color: var(--ink); border: 1px solid var(--border-strong); }
+  }
+  :root[data-theme="dark"] .chart-tooltip { background: var(--surface); color: var(--ink); border: 1px solid var(--border-strong); }
+  .chart-tooltip.show { opacity: 1; }
+
+  /* ---------- Chat ---------- */
+  .chat-launcher {
+    position: fixed; bottom: 26px; right: 26px; z-index: 50;
+    width: 60px; height: 60px; border-radius: 50%;
+    background: var(--accent); color: var(--on-accent); border: none;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-lg); cursor: pointer;
+    transition: transform .2s cubic-bezier(.2,.8,.2,1);
+  }
+  .chat-launcher:hover { transform: scale(1.06) translateY(-2px); }
+  .chat-launcher:active { transform: scale(.96); }
+  .chat-launcher .badge {
+    position: absolute; top: -2px; right: -2px; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--good); border: 2px solid var(--bg);
+  }
+
+  .chat-panel {
+    position: fixed; bottom: 100px; right: 26px; z-index: 51;
+    width: 380px; max-width: calc(100vw - 32px);
+    height: 540px; max-height: calc(100vh - 140px);
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-lg); box-shadow: var(--shadow-lg);
+    display: flex; flex-direction: column; overflow: hidden;
+    opacity: 0; transform: translateY(16px) scale(.97);
+    pointer-events: none; transition: opacity .2s ease, transform .22s cubic-bezier(.2,.8,.2,1);
+  }
+  .chat-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+  .chat-head {
+    display: flex; align-items: center; gap: 10px; padding: 16px 16px;
+    border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .chat-head .avatar { background: var(--accent); }
+  .chat-head .titles { flex: 1; min-width: 0; }
+  .chat-head .titles .name { font-weight: 700; font-size: 14.5px; }
+  .chat-head .titles .status { font-size: 12px; color: var(--good-ink); display: flex; align-items: center; gap: 5px; }
+  .chat-head .titles .status .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--good); }
+  .chat-close {
+    width: 30px; height: 30px; border-radius: 50%; border: none; background: var(--surface-2);
+    color: var(--ink-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .chat-close:hover { background: var(--accent-soft); color: var(--accent-strong); }
+
+  .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .msg { max-width: 82%; padding: 10px 14px; font-size: 13.5px; line-height: 1.45; }
+  .msg.bot { align-self: flex-start; background: var(--surface-2); color: var(--ink); border-radius: 18px 18px 18px 4px; }
+  .msg.user { align-self: flex-end; background: var(--accent); color: var(--on-accent); border-radius: 18px 18px 4px 18px; }
+  .msg.typing { display: flex; gap: 4px; align-items: center; padding: 13px 16px; }
+  .msg.typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-muted); animation: bounce 1.2s infinite ease-in-out; }
+  .msg.typing span:nth-child(2) { animation-delay: .15s; }
+  .msg.typing span:nth-child(3) { animation-delay: .3s; }
+  @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
+
+  .chat-suggestions { display: flex; gap: 8px; padding: 0 16px 12px; flex-wrap: wrap; flex-shrink: 0; }
+  .suggestion-chip {
+    border: 1px solid var(--border); background: var(--bg-soft); color: var(--ink-secondary);
+    font-size: 12px; font-weight: 600; padding: 7px 12px; border-radius: var(--r-pill); cursor: pointer;
+    transition: all .15s ease;
+  }
+  .suggestion-chip:hover { border-color: var(--accent); color: var(--accent-strong); }
+
+  .chat-input-row {
+    display: flex; align-items: center; gap: 8px; padding: 12px; border-top: 1px solid var(--border); flex-shrink: 0;
+  }
+  .chat-input-row input {
+    flex: 1; border: 1px solid var(--border); background: var(--bg-soft); color: var(--ink);
+    padding: 11px 16px; border-radius: var(--r-pill); font-size: 13.5px; outline: none;
+  }
+  .chat-input-row input:focus { border-color: var(--accent); }
+  .chat-send {
+    width: 38px; height: 38px; border-radius: 50%; border: none; background: var(--accent); color: var(--on-accent);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+    transition: background .15s ease, transform .15s ease;
+  }
+  .chat-send:hover { background: var(--accent-strong); }
+  .chat-send:disabled { background: var(--border-strong); cursor: not-allowed; }
+
+  /* ---------- Scroll motion & live details ---------- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .55s cubic-bezier(.2,.8,.2,1), transform .55s cubic-bezier(.2,.8,.2,1);
+  }
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
+
+  .topbar { transition: box-shadow .25s ease, background .25s ease; }
+  .topbar.scrolled { box-shadow: 0 8px 20px -12px rgba(22,34,62,.18); border-bottom-color: var(--border-strong); }
+
+  .type-cursor {
+    display: inline-block; width: 2px; height: 1em; margin-left: 2px;
+    background: currentColor; vertical-align: -0.15em;
+    animation: blink 0.9s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .spin-badge { position: relative; width: 62px; height: 62px; flex-shrink: 0; }
+  .spin-badge-ring { width: 100%; height: 100%; animation: spin-slow 18s linear infinite; color: var(--accent-strong); }
+  .spin-badge-core {
+    position: absolute; inset: 0; margin: auto; width: 30px; height: 30px; border-radius: 50%;
+    background: var(--surface); box-shadow: var(--shadow-sm);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .spin-badge-core svg { width: 100%; height: 100%; display: block; }
+  @keyframes spin-slow { to { transform: rotate(360deg); } }
+  @media (max-width: 900px) {
+    .spin-badge { display: none; }
+  }
+
+  /* ---------- Progress: dagens uppdrag ---------- */
+  .progress-card { display: flex; flex-direction: column; gap: 14px; }
+  .progress-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .progress-head h2 { font-size: 16px; }
+  .progress-sub { font-size: 13px; color: var(--ink-secondary); margin-top: 2px; }
+  .progress-percent-value {
+    font-family: ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+    font-weight: 800; font-size: 26px; color: var(--accent-strong);
+  }
+  .progress-track {
+    position: relative;
+    height: 14px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-pill) 4px 4px var(--r-pill);
+    margin: 34px 54px 0 0;
+  }
+  .progress-goal {
+    position: absolute; right: -52px; bottom: 0;
+    width: 52px; height: 45px; z-index: 1;
+  }
+  .progress-goal svg { width: 100%; height: 100%; display: block; }
+  .progress-labels {
+    display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .04em; color: var(--ink-muted); margin-top: 4px; padding-right: 54px;
+  }
+  .progress-fill {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-soft-strong), var(--accent));
+    border-radius: var(--r-pill);
+    transition: width 1.2s cubic-bezier(.2,.8,.2,1);
+  }
+  .progress-ball {
+    position: absolute; right: 0; top: 50%;
+    transform: translate(50%, -50%) rotate(0deg);
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--surface);
+    box-shadow: var(--shadow-md);
+    display: flex; align-items: center; justify-content: center;
+    animation: roll 3.2s linear infinite;
+  }
+  .progress-ball svg { width: 100%; height: 100%; display: block; }
+  @keyframes roll {
+    from { transform: translate(50%, -50%) rotate(0deg); }
+    to { transform: translate(50%, -50%) rotate(360deg); }
+  }
+
+  /* ---------- Pulse: "live" indicators ---------- */
+  .chat-launcher .badge { animation: pulse-good 2.2s ease-out infinite; }
+  .chat-head .titles .status .dot { animation: pulse-good 2.2s ease-out infinite; }
+  @keyframes pulse-good {
+    0% { box-shadow: 0 0 0 0 rgba(23,160,91,.45); }
+    70% { box-shadow: 0 0 0 7px rgba(23,160,91,0); }
+    100% { box-shadow: 0 0 0 0 rgba(23,160,91,0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spin-badge-ring, .progress-ball, .chat-launcher .badge, .chat-head .titles .status .dot { animation: none; }
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1000px) {
+    .content-grid, .report-grid { grid-template-columns: 1fr; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .week-grid { grid-template-columns: repeat(1, 1fr); }
+    .search { display: none; }
+  }
+  @media (max-width: 880px) {
+    .sidebar { width: 76px; padding: 20px 10px; }
+    .sidebar .logo { justify-content: center; padding: 6px 0 20px; }
+    .sidebar .logo .word { display: none; }
+    .nav-item { justify-content: center; padding: 10px; position: relative; }
+    .nav-label { display: none; }
+    .nav-badge { position: absolute; top: 2px; right: 2px; }
+    .sidebar-foot { flex-direction: column; gap: 8px; }
+    .sidebar-foot .who { display: none; }
+  }
+  @media (max-width: 720px) {
+    .topbar { flex-wrap: wrap; padding: 12px 16px; }
+    main { padding: 16px; }
+    .stat-grid { grid-template-columns: 1fr; }
+    .chat-panel { right: 12px; left: 12px; width: auto; bottom: 92px; }
+    .chat-launcher { right: 16px; bottom: 16px; }
+  }
+  @media (max-width: 640px) {
+    .mail-row-top { display: flex; flex-wrap: wrap; gap: 8px; }
+    .mail-row-top > div:first-child { flex: 1 1 100%; }
+  }
+</style>
+
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="logo"><span class="word">Kanslio</span><span class="dot">.</span></div>
+
+    <nav class="sidebar-nav" role="tablist" aria-label="Huvudnavigering" id="tabs">
+      <button class="nav-item active" role="tab" aria-selected="true" data-view="oversikt">
+        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></span>
+        <span class="nav-label">Översikt</span>
+      </button>
+      <button class="nav-item" role="tab" aria-selected="false" data-view="mejl">
+        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 7l9 6 9-6"/></svg></span>
+        <span class="nav-label">Mejl</span>
+        <span class="nav-badge" id="mailNavBadge">0</span>
+      </button>
+      <button class="nav-item" role="tab" aria-selected="false" data-view="fakturor">
+        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg></span>
+        <span class="nav-label">Fakturor</span>
+        <span class="nav-badge" id="invoiceNavBadge">0</span>
+      </button>
+      <button class="nav-item" role="tab" aria-selected="false" data-view="kalender">
+        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
+        <span class="nav-label">Kalender</span>
+      </button>
+      <button class="nav-item" role="tab" aria-selected="false" data-view="schema">
+        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="15" r="5.5"/><circle cx="9" cy="15" r="1.4" fill="currentColor" stroke="none"/><path d="M13.2 11.2L19 5.5M19 5.5h-4.3M19 5.5v4.3"/></svg></span>
+        <span class="nav-label">Schema</span>
+      </button>
+      <button class="nav-item" role="tab" aria-selected="false" data-view="arenden">
+        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg></span>
+        <span class="nav-label">Ärenden</span>
+      </button>
+      <button class="nav-item" role="tab" aria-selected="false" data-view="rapporter">
+        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M11 20V4M18 20v-6"/></svg></span>
+        <span class="nav-label">Rapporter</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="avatar">ES</div>
+      <div class="who">
+        <div class="name">Erik Söderberg</div>
+        <div class="role">Handläggare</div>
+      </div>
+      <button class="icon-btn" id="themeToggle" aria-label="Växla mellan ljust och mörkt läge">
+        <svg id="iconSun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.5M12 19v2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12H5M19 12h2.5M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg>
+        <svg id="iconMoon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <div class="main-col">
+  <header class="topbar">
+    <div class="topbar-right">
+      <label class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" placeholder="Sök ärenden, klienter…" id="globalSearch" />
+      </label>
+      <button class="icon-btn" aria-label="Aviseringar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ÖVERSIKT -->
+    <section class="view active" id="view-oversikt">
+      <div class="page-head">
+        <div>
+          <h1>God morgon, Erik</h1>
+          <div class="sub">Onsdag 22 juli 2026 · Kansliet har 24 öppna ärenden just nu</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div class="spin-badge" aria-hidden="true">
+            <svg class="spin-badge-ring" viewBox="0 0 100 100">
+              <defs><path id="badgeRingPath" d="M50,50 m-40,0 a40,40 0 1,1 80,0 a40,40 0 1,1 -80,0"/></defs>
+              <text font-size="7.6" font-weight="700" letter-spacing="2" fill="currentColor">
+                <textPath href="#badgeRingPath" xlink:href="#badgeRingPath" startOffset="0%">FÖR SPORTFÖRENINGAR &#8226; ARBETAR DYGNET RUNT &#8226; </textPath>
+              </text>
+            </svg>
+            <span class="spin-badge-core">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9.6" fill="#FFFFFF" stroke="#16223E" stroke-width="1.1"/>
+                <polygon points="12,8.8 15,11 13.9,14.6 10.1,14.6 9,11" fill="#16223E"/>
+                <path d="M12,8.8L12,3 M15,11L20.6,9.2 M13.9,14.6L17.3,19.3 M10.1,14.6L6.7,19.3 M9,11L3.4,9.2" stroke="#16223E" stroke-width="1" stroke-linecap="round"/>
+              </svg>
+            </span>
+          </div>
+          <button class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Nytt ärende
+          </button>
+        </div>
+      </div>
+
+      <div class="card card-pad reveal">
+        <div class="card-head"><h2>Att göra idag</h2></div>
+        <div class="todo-row">
+          <div class="todo-icon todo-icon-blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 7l9 6 9-6"/></svg>
+          </div>
+          <div class="todo-text">
+            <div class="todo-title" id="todoMailTitle">Mejlutkast redo att skickas</div>
+            <div class="todo-sub" id="todoMailSub">Kanslio skrev dem i natt — bara att granska och skicka.</div>
+          </div>
+          <button class="btn-primary" data-goto="mejl">Granska</button>
+        </div>
+        <div class="todo-row">
+          <div class="todo-icon todo-icon-green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg>
+          </div>
+          <div class="todo-text">
+            <div class="todo-title" id="todoInvoiceTitle">Fakturor redo att skickas</div>
+            <div class="todo-sub">Kanslio har redan skrivit dem åt dig — du behöver bara godkänna.</div>
+          </div>
+          <button class="btn-primary" data-goto="fakturor">Granska</button>
+        </div>
+        <div class="todo-row">
+          <div class="todo-icon todo-icon-amber">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
+          </div>
+          <div class="todo-text">
+            <div class="todo-title" id="todoCaseTitle">Ärenden kräver uppmärksamhet</div>
+            <div class="todo-sub" id="todoCaseSub">Se listan längre ner på sidan.</div>
+          </div>
+          <button class="btn-primary" data-goto="arenden">Visa</button>
+        </div>
+      </div>
+
+      <div class="card card-pad progress-card reveal">
+        <div class="progress-head">
+          <div>
+            <h2>Dagens uppdrag</h2>
+            <div class="progress-sub" id="progressSub">1 av 10 uppdrag klara idag</div>
+          </div>
+          <div class="progress-percent-value tabular" data-target="10" data-format="int">0<span class="unit">%</span></div>
+        </div>
+        <div class="progress-track">
+          <span class="progress-goal" aria-hidden="true">
+            <svg viewBox="0 0 44 38">
+              <path d="M13,5 V34 M19,5 V34 M25,5 V34 M31,5 V34 M7,12 H37 M7,19 H37 M7,26 H37" stroke="var(--accent-soft-strong)" stroke-width="0.9"/>
+              <path d="M7,34 V5 H37 V34" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="7" cy="5" r="2.1" fill="var(--ink)"/>
+              <circle cx="37" cy="5" r="2.1" fill="var(--ink)"/>
+            </svg>
+          </span>
+          <div class="progress-fill" data-width="10%">
+            <span class="progress-ball" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9.6" fill="#FFFFFF" stroke="#16223E" stroke-width="1.1"/>
+                <polygon points="12,8.8 15,11 13.9,14.6 10.1,14.6 9,11" fill="#16223E"/>
+                <path d="M12,8.8L12,3 M15,11L20.6,9.2 M13.9,14.6L17.3,19.3 M10.1,14.6L6.7,19.3 M9,11L3.4,9.2" stroke="#16223E" stroke-width="1" stroke-linecap="round"/>
+              </svg>
+            </span>
+          </div>
+        </div>
+        <div class="progress-labels">
+          <span>Start</span>
+          <span>Mål &#8226; 100%</span>
+        </div>
+      </div>
+
+      <div class="stat-grid" id="statGrid">
+        <!-- stat cards injected by JS -->
+      </div>
+
+      <div class="content-grid">
+        <div class="card card-pad">
+          <div class="card-head">
+            <h2>Kräver uppmärksamhet</h2>
+            <button class="link" data-goto="arenden">Visa alla ärenden
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+          <div id="attentionList"></div>
+        </div>
+
+        <div class="col-stack">
+          <div class="card card-pad">
+            <div class="card-head"><h2>Idag</h2></div>
+            <div id="agendaList"></div>
+          </div>
+          <div class="card card-pad">
+            <div class="card-head"><h2>Senaste aktivitet</h2></div>
+            <div id="activityList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MEJL -->
+    <section class="view" id="view-mejl">
+      <div class="page-head">
+        <div>
+          <h1>Mejl</h1>
+          <div class="sub">AI-utkast kopplade till kansliets Outlook, prioriterade åt dig</div>
+        </div>
+      </div>
+
+      <div class="mail-hero reveal">
+        <div class="mail-hero-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 7l9 6 9-6"/></svg>
+        </div>
+        <div class="mail-hero-text">
+          <h2 id="mailHeroTitle">I natt skrev Kanslio utkast åt dig</h2>
+          <p>Sorterat efter vad som är viktigast — granska, redigera och skicka direkt härifrån.</p>
+        </div>
+        <span class="mail-source">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 7l9 6 9-6"/></svg>
+          Kopplat till Outlook
+        </span>
+      </div>
+
+      <div class="card card-pad">
+        <div id="mailList"></div>
+      </div>
+    </section>
+
+    <!-- FAKTUROR -->
+    <section class="view" id="view-fakturor">
+      <div class="page-head">
+        <div>
+          <h1>Fakturor</h1>
+          <div class="sub">Medlems-, sponsor- och leverantörsfakturor — bevakade av Kanslio</div>
+        </div>
+        <button class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Ny faktura
+        </button>
+      </div>
+
+      <div class="mail-hero reveal">
+        <div class="mail-hero-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg>
+        </div>
+        <div class="mail-hero-text">
+          <h2 id="invoiceHeroTitle">Kanslio har redan skrivit fakturautkast åt dig</h2>
+          <p>Granska, redigera och skicka direkt härifrån — du behöver inte skapa dem själv.</p>
+        </div>
+        <span class="mail-source">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg>
+          Kopplat till bokföringen
+        </span>
+      </div>
+
+      <div class="stat-grid" id="invoiceStatGrid"></div>
+
+      <div class="card card-pad">
+        <div class="table-wrap">
+          <div class="invoice-head">
+            <div>Faktura</div><div>Belopp</div><div>Status</div><div>Förfaller</div><div>Hanteras av</div><div></div>
+          </div>
+          <div id="invoiceTable"></div>
+        </div>
+        <div class="footnote">Visar de 8 senaste fakturorna av totalt 24 aktiva.</div>
+      </div>
+    </section>
+
+    <!-- ÄRENDEN -->
+    <section class="view" id="view-arenden">
+      <div class="page-head">
+        <div>
+          <h1>Ärenden</h1>
+          <div class="sub">Visar de 8 senaste ärendena av totalt 24 öppna</div>
+        </div>
+        <button class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Nytt ärende
+        </button>
+      </div>
+
+      <div class="card card-pad">
+        <div class="filter-row">
+          <div class="pill-filters" id="statusFilters">
+            <button class="pill-filter active" data-status="alla">Alla</button>
+            <button class="pill-filter" data-status="ny">Ny</button>
+            <button class="pill-filter" data-status="pagar">Pågår</button>
+            <button class="pill-filter" data-status="vantar">Väntar svar</button>
+            <button class="pill-filter" data-status="klar">Klar</button>
+          </div>
+          <label class="search" style="display:flex; width:240px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input type="text" placeholder="Filtrera lista…" id="tableSearch" />
+          </label>
+        </div>
+
+        <div class="table-wrap" style="margin-top:14px;">
+          <div class="table-head">
+            <div>Ärende</div><div>Klient</div><div>Status</div><div>Ansvarig</div><div>Deadline</div>
+          </div>
+          <div id="fullTable"></div>
+        </div>
+        <div class="footnote" id="tableEmpty" style="display:none;">Inga ärenden matchar filtret.</div>
+      </div>
+    </section>
+
+    <!-- KALENDER -->
+    <section class="view" id="view-kalender">
+      <div class="page-head">
+        <div>
+          <h1>Kalender</h1>
+          <div class="sub">Möten, uppföljningar och deadlines för veckan</div>
+        </div>
+        <div class="week-nav">
+          <button class="icon-btn" id="weekPrev" aria-label="Föregående vecka">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+          </button>
+          <div class="week-label" id="weekLabel"></div>
+          <button class="icon-btn" id="weekNext" aria-label="Nästa vecka">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="card card-pad">
+        <div class="week-grid" id="weekGrid"></div>
+      </div>
+    </section>
+
+    <!-- SCHEMA -->
+    <section class="view" id="view-schema">
+      <div class="page-head">
+        <div>
+          <h1>Schemaplanering</h1>
+          <div class="sub">Kanslio bygger tränings- och matchscheman utifrån lagens preferenser</div>
+        </div>
+        <button class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Nytt lag
+        </button>
+      </div>
+
+      <div class="mail-hero reveal">
+        <div class="mail-hero-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="15" r="5.5"/><circle cx="9" cy="15" r="1.4" fill="currentColor" stroke="none"/><path d="M13.2 11.2L19 5.5M19 5.5h-4.3M19 5.5v4.3"/></svg>
+        </div>
+        <div class="mail-hero-text">
+          <h2>Kanslio planerar veckans pass automatiskt</h2>
+          <p>Utifrån varje lags preferenser — antal pass, planunderlag och prioritet vid krockar.</p>
+        </div>
+        <button class="btn-primary" data-goto="kalender">
+          Visa i kalendern
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+
+      <div class="card card-pad">
+        <div class="card-head"><h2>Lagens preferenser</h2></div>
+        <div id="teamList"></div>
+      </div>
+
+      <div class="card card-pad">
+        <div class="card-head"><h2>Föreslaget veckoschema</h2></div>
+        <div class="week-grid" id="scheduleGrid"></div>
+      </div>
+    </section>
+
+    <!-- RAPPORTER -->
+    <section class="view" id="view-rapporter">
+      <div class="page-head">
+        <div>
+          <h1>Rapporter</h1>
+          <div class="sub">Juli 2026 · hur ärendeflödet ser ut just nu</div>
+        </div>
+      </div>
+
+      <div class="report-grid">
+        <div class="card card-pad">
+          <div class="card-head"><h2>Ärenden per status</h2></div>
+          <div id="statusBars"></div>
+          <div class="insight"><b>24 ärenden är öppna</b> just nu — de flesta (11) pågår aktivt, 7 väntar på klientsvar.</div>
+        </div>
+
+        <div class="card card-pad">
+          <div class="card-head"><h2>Avslutade ärenden, senaste 8 veckorna</h2></div>
+          <div class="chart-svg-wrap" id="trendWrap">
+            <svg id="trendChart" viewBox="0 0 520 220" width="100%" height="220" role="img" aria-label="Trend över avslutade ärenden de senaste åtta veckorna"></svg>
+            <div class="chart-tooltip" id="trendTooltip"></div>
+          </div>
+          <div class="insight">Kansliet avslutade <b>18 ärenden</b> denna vecka — <b>12 % snabbare</b> handläggning än i juni.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+  </div>
+</div>
+
+<!-- Chat -->
+<button class="chat-launcher" id="chatLauncher" aria-label="Öppna assistent" aria-expanded="false">
+  <span class="badge"></span>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+</button>
+
+<div class="chat-panel" id="chatPanel" role="dialog" aria-label="Fråga Kanslio">
+  <div class="chat-head">
+    <div class="avatar">K</div>
+    <div class="titles">
+      <div class="name">Fråga Kanslio</div>
+      <div class="status"><span class="dot"></span>Redo att hjälpa till</div>
+    </div>
+    <button class="chat-close" id="chatClose" aria-label="Stäng assistent">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg bot">Hej Erik! Jag kan sammanfatta mejlutkast, fakturor, öppna ärenden eller dagens agenda. Vad vill du veta?</div>
+  </div>
+  <div class="chat-suggestions" id="chatSuggestions">
+    <button class="suggestion-chip" data-q="Sammanfatta mejlutkast">Sammanfatta mejlutkast</button>
+    <button class="suggestion-chip" data-q="Några fakturautkast att skicka?">Några fakturautkast att skicka?</button>
+    <button class="suggestion-chip" data-q="Vad har jag idag?">Vad har jag idag?</button>
+  </div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Skriv en fråga…" autocomplete="off" />
+    <button class="chat-send" id="chatSend" disabled aria-label="Skicka">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const STATUS_LABEL = { ny: 'Ny', pagar: 'Pågår', vantar: 'Väntar svar', klar: 'Klar' };
+
+  const CASES = [
+    { title: 'Medlemsansökan – familjen Berg (U10)', client: 'Innebandysektionen', status: 'pagar', assignee: 'Erik Söderberg', initials: 'ES', deadline: '24 jul' },
+    { title: 'Hallbokning – vårsäsongen', client: 'Västerås kommun', status: 'vantar', assignee: 'Maria Lindqvist', initials: 'ML', deadline: '25 jul' },
+    { title: 'Försäkringsärende – skada, P14', client: 'Föräldragrupp P14', status: 'ny', assignee: 'Erik Söderberg', initials: 'ES', deadline: '26 jul' },
+    { title: 'Sponsoravtal – förnyelse', client: 'Byggmax lokal', status: 'pagar', assignee: 'Johan Ahlgren', initials: 'JA', deadline: '28 jul' },
+    { title: 'Bidragsansökan – aktivitetsstöd', client: 'Västerås kommun', status: 'klar', assignee: 'Maria Lindqvist', initials: 'ML', deadline: '20 jul' },
+    { title: 'Materialbeställning – matchtröjor dam', client: 'Sportlagret AB', status: 'vantar', assignee: 'Johan Ahlgren', initials: 'JA', deadline: '30 jul' },
+    { title: 'Domarschema – höstens seriespel', client: 'Fotbollssektionen', status: 'pagar', assignee: 'Erik Söderberg', initials: 'ES', deadline: '1 aug' },
+    { title: 'Ledarutbildning – anmälan', client: 'SISU Idrottsutbildarna', status: 'ny', assignee: 'Maria Lindqvist', initials: 'ML', deadline: '3 aug' },
+  ];
+
+  const ATTENTION = CASES.filter(c => c.status !== 'klar').slice(0, 5);
+
+  const AGENDA = [
+    { time: '09:00', title: 'Möte – hallbokning med kommunen', kind: 'meeting' },
+    { time: '11:30', title: 'Uppföljning medlemsansökan, U10', kind: 'internal' },
+    { time: '13:00', title: 'Avstämning – ledarteamet', kind: 'internal' },
+    { time: '15:00', title: 'Möte – sponsoravtal, Byggmax', kind: 'meeting' },
+    { time: '16:30', title: 'Deadline: svar materialbeställning', kind: 'deadline' },
+  ];
+
+  const ACTIVITY = [
+    { who: 'Maria Lindqvist', initials: 'ML', text: 'avslutade <b>Bidragsansökan – aktivitetsstöd</b>', time: '2 tim sedan' },
+    { who: 'Johan Ahlgren', initials: 'JA', text: 'laddade upp underlag till <b>Materialbeställning – matchtröjor dam</b>', time: '4 tim sedan' },
+    { who: 'Kanslio', initials: 'AI', text: 'skrev <b>8 mejlutkast</b> under natten', time: 'i natt, 03:24' },
+    { who: 'Erik Söderberg', initials: 'ES', text: 'kommenterade i <b>Medlemsansökan – familjen Berg</b>', time: 'igår, 11:05' },
+  ];
+
+  const STATS = [
+    { key: 'open', label: 'Öppna ärenden', value: 24, unit: '', format: 'int', delta: '+3 sedan igår', deltaType: 'neutral', trend: [14,15,17,16,18,20,24], icon: 'folder', goto: 'arenden' },
+    { key: 'waiting', label: 'Väntar på svar', value: 7, unit: '', format: 'int', delta: '−2 sedan igår', deltaType: 'good', trend: [12,11,10,9,10,8,7], icon: 'clock', goto: 'arenden' },
+    { key: 'closed', label: 'Avslutade denna vecka', value: 18, unit: '', format: 'int', delta: '+5 vs förra veckan', deltaType: 'good', trend: [9,11,8,13,10,14,18], icon: 'check', goto: 'rapporter' },
+    { key: 'time', label: 'Snitt handläggningstid', value: 3.2, unit: 'dagar', format: 'decimal1', delta: '−0,4 dagar', deltaType: 'good', trend: [4.1,3.9,3.8,3.6,3.5,3.3,3.2], icon: 'gauge', goto: 'rapporter' },
+  ];
+
+  const INVOICE_STATS = [
+    { label: 'Fakturautkast redo', value: 5, unit: '', format: 'int', delta: 'skrivna av Kanslio', deltaType: 'neutral', trend: [1,2,2,3,4,4,5], icon: 'receipt' },
+    { label: 'Väntar på betalning', value: 6, unit: '', format: 'int', delta: 'bevakas av Kanslio', deltaType: 'warn', trend: [4,5,5,6,6,7,6], icon: 'clock' },
+    { label: 'Fakturerat denna månad', value: 142500, unit: ' kr', format: 'sek', delta: '+12 % vs juni', deltaType: 'good', trend: [98000,105000,112000,120000,128000,135000,142500], icon: 'gauge' },
+    { label: 'Automatiskt matchade', value: 21, unit: '', format: 'int', delta: 'betalningar denna månad', deltaType: 'good', trend: [10,12,14,15,17,19,21], icon: 'check' },
+  ];
+
+  // 'pagar' = utkast skrivet av Kanslio, redo att granska och skicka (samma idé som Mejl)
+  // 'ny' = skickad, väntar betalning · 'vantar' = påminnelse skickad · 'klar' = betald
+  const INVOICE_STATUS_LABEL = { pagar: 'Utkast klart', ny: 'Skickad', vantar: 'Påminnelse skickad', klar: 'Betald' };
+
+  const INVOICES = [
+    { title: 'Medlemsfaktura – Familjen Ek', sub: 'Fotboll P16', amount: 800, status: 'pagar', due: 'Skickas 28 jul', handler: 'Kanslio',
+      draft: 'Fakturan är ifylld utifrån medlemsregistret — 800 kr för höstterminen, Fotboll P16. Skickas till familjen Eks angivna e-post så snart du godkänner.' },
+    { title: 'Leverantörsfaktura – Sportlagret AB', sub: 'Matchtröjor damlag', amount: 12400, status: 'ny', due: 'Förfaller 30 jul', handler: 'ES',
+      note: 'Skickad 20 juli, förfaller 30 juli. Väntar på betalning från Sportlagret AB.' },
+    { title: 'Halltidsfaktura – Västerås kommun', sub: 'Björkhallen, vårsäsong', amount: 6200, status: 'klar', due: 'Betald 15 jul', handler: 'ML',
+      note: 'Betald 15 juli via bankgiro. Avstämd automatiskt av Kanslio.' },
+    { title: 'Medlemsfaktura – Familjen Berg', sub: 'Innebandy U10', amount: 800, status: 'vantar', due: 'Påminnelse 24 jul', handler: 'Kanslio',
+      note: 'Ursprunglig faktura skickad 10 juli. Påminnelse skickades automatiskt 24 juli eftersom betalning inte kommit in.' },
+    { title: 'Sponsorfaktura – Byggmax lokal', sub: 'Årsavtal 2026', amount: 25000, status: 'pagar', due: 'Skickas 5 aug', handler: 'JA',
+      draft: 'Sponsoravtalet för 2026/2027 signerades igår — Kanslio skrev fakturan på 25 000 kr direkt utifrån avtalet, redo att skickas till Byggmax.' },
+    { title: 'Medlemsfaktura – Familjen Nilsson', sub: 'Handboll dam', amount: 950, status: 'klar', due: 'Betald 20 jul', handler: 'Kanslio',
+      note: 'Betald 20 juli via Swish. Avstämd automatiskt av Kanslio.' },
+    { title: 'Leverantörsfaktura – Elgiganten', sub: 'Utrustning kansli', amount: 3150, status: 'ny', due: 'Förfaller 26 jul', handler: 'ES',
+      note: 'Skickad 19 juli, förfaller 26 juli. Väntar på betalning.' },
+    { title: 'Medlemsfaktura – Familjen Ström', sub: 'Fotboll P10', amount: 800, status: 'pagar', due: 'Skickas 2 aug', handler: 'Kanslio',
+      draft: 'Ny medlem registrerad denna vecka — medlemsavgift 800 kr för Fotboll P10, klar att skicka så snart du granskat den.' },
+  ];
+
+  const TEAMS = [
+    { name: 'Herrlaget A', note: 'Har alltid förtur vid schemakrockar', freq: '4 pass/vecka', facility: 'Helplan · Naturgräs', priority: 'hog' },
+    { name: 'Damlaget A', note: 'Extra pass inför matchvecka', freq: '3 pass/vecka', facility: 'Helplan · Konstgräs', priority: 'hog' },
+    { name: 'Flickor P10', note: 'Tisdag och torsdag om möjligt', freq: '3 pass/vecka', facility: 'Helplan · Konstgräs', priority: 'medel' },
+    { name: 'Pojkar P12', note: 'Ej samtidigt som Flickor P10', freq: '3 pass/vecka', facility: 'Halvplan · Konstgräs', priority: 'medel' },
+    { name: 'Innebandy P14', note: 'Kväll efter skolslut', freq: '2 pass/vecka', facility: 'Sporthallen', priority: 'medel' },
+    { name: 'Veteranlaget', note: 'Endast kvällstid efter 20:00', freq: '1 pass/vecka', facility: 'Halvplan · Grus', priority: 'lag' },
+  ];
+
+  const SCHEDULE_PREVIEW = [
+    { name: 'Mån', num: 20, events: [
+      { time: '17:00', title: 'Flickor P10 – träning', kind: 'deadline' },
+      { time: '18:30', title: 'Herrlaget A – träning', kind: 'deadline' },
+      { time: '20:00', title: 'Veteranlaget – träning', kind: 'internal' },
+    ]},
+    { name: 'Tis', num: 21, events: [
+      { time: '17:00', title: 'Pojkar P12 – träning', kind: 'internal' },
+      { time: '18:00', title: 'Innebandy P14 – träning', kind: 'internal' },
+      { time: '19:00', title: 'Herrlaget A – träning', kind: 'deadline' },
+    ]},
+    { name: 'Ons', num: 22, events: [
+      { time: '17:00', title: 'Flickor P10 – träning', kind: 'deadline' },
+      { time: '19:00', title: 'Damlaget A – träning', kind: 'meeting' },
+    ]},
+    { name: 'Tor', num: 23, events: [
+      { time: '17:00', title: 'Pojkar P12 – träning', kind: 'internal' },
+      { time: '18:00', title: 'Innebandy P14 – träning', kind: 'internal' },
+      { time: '19:00', title: 'Herrlaget A – träning', kind: 'deadline' },
+    ]},
+    { name: 'Fre', num: 24, events: [
+      { time: '17:00', title: 'Flickor P10 – träning', kind: 'deadline' },
+      { time: '18:30', title: 'Herrlaget A – match', kind: 'deadline' },
+      { time: '19:30', title: 'Damlaget A – träning', kind: 'meeting' },
+    ]},
+  ];
+
+  const MAIL = [
+    { from: 'Familjen Berg', subject: 'Fråga om medlemsavgift och startdatum', priority: 'hog', time: '03:12',
+      draft: 'Hej! Tack för er anmälan av Elin till U10 — avgiften är 800 kr/termin och faktureras via Kanslio i samband med säsongsstart den 12 augusti. Ni får en påminnelse i god tid innan förfallodatum. Välkomna till klubben!' },
+    { from: 'Västerås kommun, Fritidsförvaltningen', subject: 'Bekräftelse hallbokning vecka 34', priority: 'hog', time: '03:19',
+      draft: 'Tack för bekräftelsen! Vi bokar in innebandyns träningstider enligt förslaget — tisdagar och torsdagar 18:00–20:00 i Björkhallen. Hör av er om något behöver justeras inför säsongsstart.' },
+    { from: 'Föräldragrupp P14', subject: 'Skadeanmälan och försäkring', priority: 'hog', time: '03:24',
+      draft: 'Vad tråkigt att höra om skadan — vi hjälper givetvis till. Bifogar blanketten för anmälan till föreningens gruppförsäkring och guidar er genom stegen så snart ni är redo.' },
+    { from: 'Byggmax lokal', subject: 'Förnyelse av sponsoravtal 2026/2027', priority: 'medel', time: '02:47',
+      draft: 'Tack för förtroendet under säsongen som gått! Vi ser gärna att vi fortsätter samarbetet och skickar över ett förslag på förnyat avtal för 2026/2027 under nästa vecka.' },
+    { from: 'Sportlagret AB', subject: 'Orderbekräftelse matchtröjor damlaget', priority: 'medel', time: '02:51',
+      draft: 'Bekräftar mottagen order på 18 matchtröjor, storlekar enligt bifogad lista. Beräknad leverans är vecka 33, till klubbens adress.' },
+    { from: 'Ledare Innebandy P12', subject: 'Fråga om domare till hemmamatch', priority: 'lag', time: '03:41',
+      draft: 'Domare är redan bokade till matchen den 2 augusti via distriktets schema — ingen åtgärd behövs från er sida. Hör av er om tiden ändras.' },
+    { from: 'SISU Idrottsutbildarna', subject: 'Inbjudan till ledarutbildning i höst', priority: 'lag', time: '03:55',
+      draft: 'Tack för inbjudan! Vi återkommer med antal deltagare från föreningen så snart vi stämt av med tränarteamet, senast i slutet av augusti.' },
+    { from: 'Revisor, föreningen', subject: 'Underlag till kvartalsbokslut', priority: 'medel', time: '02:35',
+      draft: 'Underlag för andra kvartalet är på väg — fakturaunderlag och medlemsintäkter sammanställs och skickas över senast fredag denna vecka.' },
+  ];
+
+  const STATUS_BREAKDOWN = [
+    { status: 'ny', count: 6, color: 'var(--neutral-dot)' },
+    { status: 'pagar', count: 11, color: 'var(--accent)' },
+    { status: 'vantar', count: 7, color: 'var(--warn)' },
+    { status: 'klar', count: 41, color: 'var(--good)' },
+  ];
+
+  const WEEKLY_TREND = [
+    { label: 'v23', value: 9 }, { label: 'v24', value: 11 }, { label: 'v25', value: 8 },
+    { label: 'v26', value: 13 }, { label: 'v27', value: 10 }, { label: 'v28', value: 14 },
+    { label: 'v29', value: 13 }, { label: 'v30', value: 18 },
+  ];
+
+  const WEEKS = [
+    {
+      label: 'Vecka 30 · 20–24 jul',
+      days: [
+        { name: 'Mån', num: 20, today: false, events: [
+          { time: '09:30', title: 'Sektionsmöte – Fotboll, planering hösten', kind: 'meeting' },
+          { time: '14:00', title: 'Genomgång bidragsansökningar', kind: 'internal' },
+        ]},
+        { name: 'Tis', num: 21, today: false, events: [
+          { time: '10:00', title: 'Uppföljning försäkringsärende P14', kind: 'internal' },
+          { time: '16:00', title: 'Deadline: svar Byggmax sponsoravtal', kind: 'deadline' },
+        ]},
+        { name: 'Ons', num: 22, today: true, events: [
+          { time: '09:00', title: 'Möte – hallbokning med kommunen', kind: 'meeting' },
+          { time: '13:00', title: 'Avstämning – ledarteamet', kind: 'internal' },
+          { time: '15:00', title: 'Möte – sponsoravtal, Byggmax', kind: 'meeting' },
+        ]},
+        { name: 'Tor', num: 23, today: false, events: [
+          { time: '11:00', title: 'Materialbeställning bekräftad – Sportlagret', kind: 'deadline' },
+        ]},
+        { name: 'Fre', num: 24, today: false, events: [
+          { time: '09:00', title: 'Deadline: medlemsansökan U10 klar', kind: 'deadline' },
+          { time: '13:30', title: 'Veckoavstämning, kansliet', kind: 'internal' },
+        ]},
+      ]
+    },
+    {
+      label: 'Vecka 31 · 27–31 jul',
+      days: [
+        { name: 'Mån', num: 27, today: false, events: [
+          { time: '10:00', title: 'Uppstart – ledarutbildning hösten', kind: 'internal' },
+        ]},
+        { name: 'Tis', num: 28, today: false, events: [
+          { time: '09:00', title: 'Deadline: hallbokning bekräftad', kind: 'deadline' },
+        ]},
+        { name: 'Ons', num: 29, today: false, events: [
+          { time: '13:00', title: 'Sektionsmöte – Innebandy', kind: 'meeting' },
+        ]},
+        { name: 'Tor', num: 30, today: false, events: [
+          { time: '09:00', title: 'Deadline: sponsoravtal signerat', kind: 'deadline' },
+          { time: '15:00', title: 'Introduktion nya ledare', kind: 'internal' },
+        ]},
+        { name: 'Fre', num: 31, today: false, events: [
+          { time: '14:00', title: 'Månadsavstämning juli', kind: 'internal' },
+        ]},
+      ]
+    }
+  ];
+
+  const icon = (name) => ({
+    folder: '<path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',
+    check: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/>',
+    gauge: '<path d="M12 12L16 8"/><circle cx="12" cy="12" r="9"/><path d="M7 15a6 6 0 0110 0"/>',
+    receipt: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/>',
+  }[name] || '');
+
+  const svgIcon = (name, size=18) =>
+    `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon(name)}</svg>`;
+
+  const sparkPath = (values, w=100, h=34) => {
+    const min = Math.min(...values), max = Math.max(...values);
+    const range = (max - min) || 1;
+    const pts = values.map((v, i) => [
+      (i / (values.length - 1)) * w,
+      h - ((v - min) / range) * (h - 6) - 3
+    ]);
+    const line = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+    const area = line + ` L${w},${h} L0,${h} Z`;
+    const last = pts[pts.length - 1];
+    return { line, area, lastX: last[0], lastY: last[1] };
+  };
+
+  function formatValue(v, fmt) {
+    if (fmt === 'sek') return Math.round(v).toLocaleString('sv-SE');
+    if (fmt === 'decimal1') return v.toFixed(1).replace('.', ',');
+    return Math.round(v).toString();
+  }
+
+  // ---- Motion: scroll reveal, count-up-on-scroll, typewriter ----
+  function prefersReducedMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function animateStatValue(el, skipAnim) {
+    el.dataset.animated = '1';
+    const target = parseFloat(el.dataset.target);
+    const fmt = el.dataset.format;
+    const unitEl = el.querySelector('.unit');
+    const unitHtml = unitEl ? unitEl.outerHTML : '';
+    const render = (v) => formatValue(v, fmt) + unitHtml;
+    if (skipAnim || prefersReducedMotion()) { el.innerHTML = render(target); return; }
+    const start = performance.now();
+    const dur = 900;
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / dur);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.innerHTML = render(target * eased);
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  function typewrite(el, text, opts = {}) {
+    if (prefersReducedMotion()) { el.textContent = text; if (opts.onDone) opts.onDone(); return; }
+    el.textContent = '';
+    const cursor = document.createElement('span');
+    cursor.className = 'type-cursor';
+    el.appendChild(cursor);
+    const speed = Math.max(6, Math.min(20, 1200 / Math.max(text.length, 1)));
+    let i = 0;
+    function step() {
+      el.textContent = text.slice(0, i);
+      el.appendChild(cursor);
+      if (opts.onStep) opts.onStep();
+      i++;
+      if (i <= text.length) {
+        setTimeout(step, speed);
+      } else {
+        cursor.remove();
+        if (opts.onDone) opts.onDone();
+      }
+    }
+    step();
+  }
+
+  function revealEl(el, skipAnim) {
+    el.classList.add('in-view');
+    el.querySelectorAll('[data-target]').forEach(v => {
+      if (!v.dataset.animated) animateStatValue(v, skipAnim);
+    });
+    el.querySelectorAll('.progress-fill[data-width]').forEach(f => {
+      if (!f.dataset.animated) { f.dataset.animated = '1'; f.style.width = f.dataset.width; }
+    });
+    el.querySelectorAll('[data-type]').forEach(t => {
+      if (!t.dataset.typed) {
+        t.dataset.typed = '1';
+        if (skipAnim) t.textContent = t.dataset.type; else typewrite(t, t.dataset.type);
+      }
+    });
+  }
+
+  let revealObserver = null;
+  function ensureRevealObserver() {
+    if (revealObserver) return revealObserver;
+    revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        revealEl(entry.target);
+        revealObserver.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+    return revealObserver;
+  }
+
+  function observeReveals() {
+    const reduced = prefersReducedMotion();
+    const noObserver = typeof IntersectionObserver === 'undefined';
+    if (reduced || noObserver) {
+      document.querySelectorAll('.reveal:not(.in-view)').forEach(el => revealEl(el, true));
+      return;
+    }
+    const obs = ensureRevealObserver();
+    document.querySelectorAll('.reveal:not(.in-view)').forEach(el => obs.observe(el));
+  }
+
+  // Fail-safe: if IntersectionObserver never fires for some reason (older
+  // WebViews, odd sandboxed-iframe edge cases), nothing should stay
+  // permanently invisible — force-reveal anything still hidden after a beat.
+  function armRevealFailsafe() {
+    setTimeout(() => {
+      document.querySelectorAll('.reveal:not(.in-view)').forEach(el => revealEl(el, true));
+    }, 2500);
+  }
+
+  function revealDelay(idx) {
+    return `style="transition-delay:${Math.min(idx, 8) * 45}ms"`;
+  }
+
+  function renderStatGroup(containerId, stats) {
+    const grid = document.getElementById(containerId);
+    grid.innerHTML = stats.map((s, idx) => {
+      const spark = sparkPath(s.trend);
+      const gid = containerId + idx;
+      const linkAttrs = s.goto ? ` data-goto="${s.goto}"` : '';
+      const linkClass = s.goto ? ' linkable' : '';
+      return `
+      <div class="card stat-card${linkClass} reveal" ${revealDelay(idx)}${linkAttrs}>
+        <div class="stat-top">
+          <div class="stat-icon">${svgIcon(s.icon, 18)}</div>
+          <span class="delta-chip ${s.deltaType}">${s.delta}</span>
+        </div>
+        <div>
+          <div class="stat-label">${s.label}</div>
+          <div class="stat-value tabular" data-target="${s.value}" data-format="${s.format || 'int'}">0${s.unit ? `<span class="unit">${s.unit}</span>` : ''}</div>
+        </div>
+        <svg class="spark" viewBox="0 0 100 34" preserveAspectRatio="none">
+          <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--accent)" stop-opacity=".28"/>
+            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+          </linearGradient></defs>
+          <path d="${spark.area}" fill="url(#${gid})" stroke="none"/>
+          <path d="${spark.line}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="${spark.lastX}" cy="${spark.lastY}" r="3" fill="var(--accent)"/>
+        </svg>
+        ${s.goto ? '<div class="stat-card-hint">Visa detaljer <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>' : ''}
+      </div>`;
+    }).join('');
+  }
+
+  function statusChip(status, labelMap = STATUS_LABEL) {
+    return `<span class="status-chip status-${status}"><span class="dot"></span>${labelMap[status]}</span>`;
+  }
+
+  function renderMail() {
+    const prioLabel = { hog: 'Hög prioritet', medel: 'Medel prioritet', lag: 'Låg prioritet' };
+    document.getElementById('mailList').innerHTML = MAIL.map((m, i) => `
+      <div class="mail-row reveal" ${revealDelay(i)} data-idx="${i}">
+        <div class="mail-row-top">
+          <div>
+            <div class="mail-from">${m.from}</div>
+            <div class="mail-subject">${m.subject}</div>
+          </div>
+          <span class="priority-chip priority-${m.priority}">${prioLabel[m.priority]}</span>
+          <span class="mail-time tabular">Utkast ${m.time}</span>
+          <svg class="mail-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div class="mail-detail">
+          <div class="detail-label">AI-utkast, redo att granska</div>
+          <span class="mail-draft-text"></span>
+          <div class="detail-actions">
+            <button class="btn-primary" type="button">Skicka</button>
+            <button class="btn-ghost" type="button">Redigera</button>
+          </div>
+        </div>
+      </div>`).join('');
+
+    document.querySelectorAll('#mailList .mail-row').forEach(row => {
+      const m = MAIL[parseInt(row.dataset.idx, 10)];
+      row.querySelector('.mail-row-top').addEventListener('click', () => {
+        row.classList.toggle('open');
+        if (row.classList.contains('open') && !row.dataset.typed) {
+          row.dataset.typed = '1';
+          typewrite(row.querySelector('.mail-draft-text'), m.draft);
+        }
+      });
+    });
+
+    const mailHeroEl = document.getElementById('mailHeroTitle');
+    mailHeroEl.textContent = '';
+    mailHeroEl.dataset.type = `I natt skrev Kanslio ${MAIL.length} utkast åt dig`;
+    document.getElementById('mailNavBadge').textContent = MAIL.length;
+  }
+
+  function renderTodoSummary() {
+    const mailTitle = document.getElementById('todoMailTitle');
+    const mailSub = document.getElementById('todoMailSub');
+    if (mailTitle) {
+      const hogCount = MAIL.filter(m => m.priority === 'hog').length;
+      mailTitle.textContent = `${MAIL.length} mejlutkast redo att skickas`;
+      if (mailSub) {
+        mailSub.textContent = hogCount > 0
+          ? `Kanslio skrev dem i natt — ${hogCount} är brådskande.`
+          : 'Kanslio skrev dem i natt — bara att granska och skicka.';
+      }
+    }
+
+    const invoiceTitle = document.getElementById('todoInvoiceTitle');
+    if (invoiceTitle) {
+      const draftCount = INVOICES.filter(i => i.status === 'pagar').length;
+      invoiceTitle.textContent = draftCount === 1 ? '1 faktura redo att skickas' : `${draftCount} fakturor redo att skickas`;
+    }
+
+    const caseTitle = document.getElementById('todoCaseTitle');
+    const caseSub = document.getElementById('todoCaseSub');
+    if (caseTitle) {
+      caseTitle.textContent = `${ATTENTION.length} ärenden kräver uppmärksamhet`;
+      if (caseSub && ATTENTION.length > 0) {
+        caseSub.textContent = `Närmast i tid: ${ATTENTION[0].title}, ${ATTENTION[0].deadline}.`;
+      }
+    }
+  }
+
+  function renderInvoices() {
+    const detailLabel = {
+      pagar: 'AI-utkast, redo att granska',
+      ny: 'Skickad, väntar på betalning',
+      vantar: 'Påminnelse skickad',
+      klar: 'Betald',
+    };
+    const actionsFor = (inv) => {
+      if (inv.status === 'pagar') {
+        return '<button class="btn-primary" type="button">Skicka</button><button class="btn-ghost" type="button">Redigera</button>';
+      }
+      if (inv.status === 'ny') return '<button class="btn-ghost" type="button">Skicka påminnelse</button>';
+      if (inv.status === 'vantar') return '<button class="btn-ghost" type="button">Visa faktura</button>';
+      return '<button class="btn-ghost" type="button">Visa kvitto</button>';
+    };
+
+    document.getElementById('invoiceTable').innerHTML = INVOICES.map((inv, idx) => `
+      <div class="invoice-item reveal" ${revealDelay(idx)} data-idx="${idx}">
+        <div class="invoice-row">
+          <div>
+            <div class="case-title">${inv.title}</div>
+            <div class="case-client">${inv.sub}</div>
+          </div>
+          <div class="invoice-amount tabular">${inv.amount.toLocaleString('sv-SE')} kr</div>
+          <div>${statusChip(inv.status, INVOICE_STATUS_LABEL)}</div>
+          <div class="case-deadline tabular">${inv.due}</div>
+          <div class="assignee">${inv.handler === 'Kanslio'
+            ? '<span class="mini-avatar ai">AI</span>'
+            : `<span class="mini-avatar">${inv.handler}</span>`}</div>
+          <svg class="mail-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div class="mail-detail">
+          <div class="detail-label">${detailLabel[inv.status]}</div>
+          ${inv.status === 'pagar' ? inv.draft : inv.note}
+          <div class="detail-actions">${actionsFor(inv)}</div>
+        </div>
+      </div>`).join('');
+
+    document.querySelectorAll('#invoiceTable .invoice-item').forEach(item => {
+      item.querySelector('.invoice-row').addEventListener('click', () => item.classList.toggle('open'));
+    });
+
+    const draftCount = INVOICES.filter(i => i.status === 'pagar').length;
+    const heroEl = document.getElementById('invoiceHeroTitle');
+    if (heroEl) heroEl.textContent = `Kanslio har redan skrivit ${draftCount} fakturautkast åt dig`;
+    const badge = document.getElementById('invoiceNavBadge');
+    if (badge) badge.textContent = draftCount;
+  }
+
+  function renderTeams() {
+    const prioLabel = { hog: 'Hög prioritet', medel: 'Normal prioritet', lag: 'Låg prioritet' };
+    document.getElementById('teamList').innerHTML = TEAMS.map((t, idx) => `
+      <div class="team-row reveal" ${revealDelay(idx)}>
+        <div>
+          <div class="team-name">${t.name}</div>
+          <div class="team-note">${t.note}</div>
+        </div>
+        <span class="priority-chip priority-${t.priority}">${prioLabel[t.priority]}</span>
+        <div class="team-meta">${t.freq}</div>
+        <div class="team-meta">${t.facility}</div>
+      </div>`).join('');
+  }
+
+  function renderSchedule() {
+    document.getElementById('scheduleGrid').innerHTML = SCHEDULE_PREVIEW.map((day, idx) => `
+      <div class="day-col reveal" ${revealDelay(idx)}>
+        <div class="day-head">
+          <div class="name">${day.name}</div>
+          <div class="num tabular">${day.num}</div>
+        </div>
+        ${day.events.map(e => `
+          <div class="event-block event-${e.kind}">
+            <span class="time tabular">${e.time}</span>${e.title}
+          </div>`).join('')}
+      </div>`).join('');
+  }
+
+  function renderAttention() {
+    document.getElementById('attentionList').innerHTML = ATTENTION.map((c, idx) => `
+      <div class="case-row reveal" ${revealDelay(idx)}>
+        <div class="case-main">
+          <div class="case-title">${c.title}</div>
+          <div class="case-client">${c.client}</div>
+        </div>
+        ${statusChip(c.status)}
+        <div class="case-deadline">${c.deadline}</div>
+      </div>`).join('');
+  }
+
+  function renderAgenda() {
+    const kindDot = { meeting: 'var(--accent)', internal: 'var(--neutral-dot)', deadline: 'var(--warn)' };
+    document.getElementById('agendaList').innerHTML = AGENDA.map((a, idx) => `
+      <div class="agenda-item reveal" ${revealDelay(idx)}>
+        <div class="agenda-time tabular">${a.time}</div>
+        <div class="agenda-dot" style="background:${kindDot[a.kind]}"></div>
+        <div class="agenda-title">${a.title}</div>
+      </div>`).join('');
+  }
+
+  function renderActivity() {
+    document.getElementById('activityList').innerHTML = ACTIVITY.map((a, idx) => `
+      <div class="activity-item reveal" ${revealDelay(idx)}>
+        <div class="activity-avatar">${a.initials}</div>
+        <div>
+          <div class="activity-text"><b>${a.who}</b> ${a.text}</div>
+          <div class="activity-time">${a.time}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderFullTable(filterStatus = 'alla', query = '') {
+    const q = query.trim().toLowerCase();
+    const rows = CASES.filter(c =>
+      (filterStatus === 'alla' || c.status === filterStatus) &&
+      (q === '' || c.title.toLowerCase().includes(q) || c.client.toLowerCase().includes(q))
+    );
+    document.getElementById('fullTable').innerHTML = rows.map((c, idx) => `
+      <div class="full-row reveal" ${revealDelay(idx)}>
+        <div class="case-title">${c.title}</div>
+        <div class="case-client">${c.client}</div>
+        <div>${statusChip(c.status)}</div>
+        <div class="assignee"><span class="mini-avatar">${c.initials}</span>${c.assignee}</div>
+        <div class="case-deadline tabular">${c.deadline}</div>
+      </div>`).join('');
+    document.getElementById('tableEmpty').style.display = rows.length ? 'none' : 'block';
+    observeReveals();
+  }
+
+  function renderStatusBars() {
+    const max = Math.max(...STATUS_BREAKDOWN.map(s => s.count));
+    document.getElementById('statusBars').innerHTML = STATUS_BREAKDOWN.map((s, idx) => `
+      <div class="bar-row reveal" ${revealDelay(idx)}>
+        <div class="name">${STATUS_LABEL[s.status]}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:0%; background:${s.color};" data-width="${(s.count / max * 100).toFixed(1)}"></div></div>
+        <div class="count tabular">${s.count}</div>
+      </div>`).join('');
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.bar-fill').forEach(el => { el.style.width = el.dataset.width + '%'; });
+    });
+  }
+
+  function renderTrendChart() {
+    const svg = document.getElementById('trendChart');
+    const tooltip = document.getElementById('trendTooltip');
+    const W = 520, H = 220, PAD = 28;
+    const values = WEEKLY_TREND.map(d => d.value);
+    const max = Math.max(...values), min = 0;
+    const stepX = (W - PAD * 2) / (values.length - 1);
+    const yFor = v => H - PAD - ((v - min) / (max - min)) * (H - PAD * 2);
+    const pts = values.map((v, i) => [PAD + i * stepX, yFor(v)]);
+
+    let grid = '';
+    for (let i = 0; i <= 3; i++) {
+      const y = PAD + i * (H - PAD * 2) / 3;
+      grid += `<line x1="${PAD}" y1="${y.toFixed(1)}" x2="${W - PAD}" y2="${y.toFixed(1)}" stroke="var(--border)" stroke-width="1"/>`;
+    }
+
+    const line = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+    const area = line + ` L${pts[pts.length - 1][0]},${H - PAD} L${pts[0][0]},${H - PAD} Z`;
+    const last = pts[pts.length - 1];
+
+    const dots = pts.map((p, i) => {
+      const isLast = i === pts.length - 1;
+      return `<circle class="trend-dot" data-i="${i}" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${isLast ? 5 : 4}"
+        fill="${isLast ? 'var(--accent)' : 'var(--surface)'}" stroke="var(--accent)" stroke-width="2" style="cursor:pointer;"/>`;
+    }).join('');
+
+    const labels = WEEKLY_TREND.map((d, i) =>
+      `<text x="${pts[i][0].toFixed(1)}" y="${H - 6}" font-size="11" fill="var(--ink-muted)" text-anchor="middle">${d.label}</text>`).join('');
+
+    svg.innerHTML = `
+      <defs><linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--accent)" stop-opacity=".22"/>
+        <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+      </linearGradient></defs>
+      ${grid}
+      <path d="${area}" fill="url(#trendFill)" stroke="none"/>
+      <path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      ${dots}
+      <text x="${last[0].toFixed(1)}" y="${(last[1] - 12).toFixed(1)}" font-size="12" font-weight="700" fill="var(--accent-strong)" text-anchor="middle">${WEEKLY_TREND[WEEKLY_TREND.length-1].value}</text>
+      ${labels}
+    `;
+
+    svg.querySelectorAll('.trend-dot').forEach(dot => {
+      dot.addEventListener('mouseenter', (e) => {
+        const i = parseInt(dot.dataset.i, 10);
+        const d = WEEKLY_TREND[i];
+        const rect = svg.getBoundingClientRect();
+        const wrapRect = document.getElementById('trendWrap').getBoundingClientRect();
+        const x = parseFloat(dot.getAttribute('cx')) / W * rect.width + (rect.left - wrapRect.left);
+        const y = parseFloat(dot.getAttribute('cy')) / H * rect.height + (rect.top - wrapRect.top);
+        tooltip.textContent = `${d.label}: ${d.value} avslutade`;
+        tooltip.style.left = x + 'px';
+        tooltip.style.top = y + 'px';
+        tooltip.classList.add('show');
+      });
+      dot.addEventListener('mouseleave', () => tooltip.classList.remove('show'));
+    });
+  }
+
+  let weekIndex = 0;
+  function renderWeek() {
+    const wk = WEEKS[weekIndex];
+    document.getElementById('weekLabel').textContent = wk.label;
+    document.getElementById('weekPrev').disabled = weekIndex === 0;
+    document.getElementById('weekNext').disabled = weekIndex === WEEKS.length - 1;
+    document.getElementById('weekPrev').style.opacity = weekIndex === 0 ? .4 : 1;
+    document.getElementById('weekNext').style.opacity = weekIndex === WEEKS.length - 1 ? .4 : 1;
+
+    document.getElementById('weekGrid').innerHTML = wk.days.map((day, idx) => `
+      <div class="day-col reveal" ${revealDelay(idx)}>
+        <div class="day-head ${day.today ? 'today' : ''}">
+          <div class="name">${day.name}</div>
+          <div class="num tabular">${day.num}</div>
+        </div>
+        ${day.events.map(e => `
+          <div class="event-block event-${e.kind}">
+            <span class="time tabular">${e.time}</span>${e.title}
+          </div>`).join('')}
+      </div>`).join('');
+    observeReveals();
+  }
+
+  // ---- Sidebar navigation ----
+  function initTabs() {
+    const btns = [...document.querySelectorAll('.nav-item[data-view]')];
+
+    function activate(view) {
+      btns.forEach(b => {
+        const isActive = b.dataset.view === view;
+        b.classList.toggle('active', isActive);
+        b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+      document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
+    }
+    btns.forEach(b => b.addEventListener('click', () => activate(b.dataset.view)));
+    document.querySelectorAll('[data-goto]').forEach(el => el.addEventListener('click', () => activate(el.dataset.goto)));
+  }
+
+  // ---- Ärenden filters ----
+  function initFilters() {
+    const filters = document.getElementById('statusFilters');
+    let currentStatus = 'alla';
+    filters.addEventListener('click', (e) => {
+      const btn = e.target.closest('.pill-filter');
+      if (!btn) return;
+      filters.querySelectorAll('.pill-filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentStatus = btn.dataset.status;
+      renderFullTable(currentStatus, document.getElementById('tableSearch').value);
+    });
+    document.getElementById('tableSearch').addEventListener('input', (e) => {
+      renderFullTable(currentStatus, e.target.value);
+    });
+  }
+
+  // ---- Kalender nav ----
+  function initWeekNav() {
+    document.getElementById('weekPrev').addEventListener('click', () => { if (weekIndex > 0) { weekIndex--; renderWeek(); } });
+    document.getElementById('weekNext').addEventListener('click', () => { if (weekIndex < WEEKS.length - 1) { weekIndex++; renderWeek(); } });
+  }
+
+  // ---- Chat ----
+  function initChat() {
+    const launcher = document.getElementById('chatLauncher');
+    const panel = document.getElementById('chatPanel');
+    const closeBtn = document.getElementById('chatClose');
+    const input = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('chatSend');
+    const messages = document.getElementById('chatMessages');
+    const suggestions = document.getElementById('chatSuggestions');
+
+    function toggle(open) {
+      panel.classList.toggle('open', open);
+      launcher.setAttribute('aria-expanded', String(open));
+      if (open) input.focus();
+    }
+    launcher.addEventListener('click', () => toggle(!panel.classList.contains('open')));
+    closeBtn.addEventListener('click', () => toggle(false));
+    input.addEventListener('input', () => { sendBtn.disabled = input.value.trim() === ''; });
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !sendBtn.disabled) send(); });
+    sendBtn.addEventListener('click', () => send());
+    suggestions.addEventListener('click', (e) => {
+      const chip = e.target.closest('.suggestion-chip');
+      if (!chip) return;
+      input.value = chip.dataset.q;
+      send();
+    });
+
+    function reply(text) {
+      const t = text.toLowerCase();
+      if (t.includes('faktura')) {
+        const drafts = INVOICES.filter(i => i.status === 'pagar').length;
+        const waiting = INVOICES.filter(i => i.status === 'ny' || i.status === 'vantar').length;
+        return `Jag har redan skrivit ${drafts} fakturautkast — du behöver bara granska och skicka dem. ${waiting} fakturor är skickade och väntar på betalning, och 21 inbetalningar har matchats automatiskt denna månad.`;
+      }
+      if (t.includes('schema') || t.includes('träning') || t.includes('tranning')) {
+        return 'Veckoschemat är byggt utifrån varje lags preferenser — Herrlaget A och Flickor P10 har alltid förtur på konstgräs, övriga lag fylls in runt dem. Vill du justera en preferens, säg bara vilket lag det gäller.';
+      }
+      if (t.includes('mejl') || t.includes('utkast') || t.includes('inkorg')) {
+        const hog = MAIL.filter(m => m.priority === 'hog').length;
+        return `I natt skrev jag ${MAIL.length} mejlutkast kopplade till Outlook, ${hog} med hög prioritet — bland annat svar till familjen Berg om medlemsavgiften och bekräftelsen till kommunen om hallbokningen.`;
+      }
+      if (t.includes('öppna') || t.includes('oppna')) {
+        return 'Just nu är 24 ärenden öppna: 11 pågår aktivt, 7 väntar på svar och 6 är nya sedan i förrgår.';
+      }
+      if (t.includes('idag')) {
+        return 'Idag: 09:00 möte om hallbokning med kommunen, 13:00 avstämning med ledarteamet, 15:00 möte om sponsoravtalet med Byggmax — och deadline 16:30 för svar på materialbeställningen.';
+      }
+      if (t.includes('väntar') || t.includes('vantar')) {
+        return '7 ärenden väntar på svar, bland annat Hallbokning – vårsäsongen (25 jul) och Materialbeställning – matchtröjor dam (30 jul).';
+      }
+      if (t.includes('deadline') || t.includes('snart') || t.includes('närmast')) {
+        return 'Närmast i tid: Medlemsansökan – familjen Berg (U10), deadline 24 juli.';
+      }
+      return 'Jag är en demoversion just nu och kan svara på frågor om mejlutkast, fakturor, scheman, öppna ärenden eller dagens agenda. Testa gärna ett av förslagen ovan!';
+    }
+
+    function send() {
+      const text = input.value.trim();
+      if (!text) return;
+      messages.insertAdjacentHTML('beforeend', `<div class="msg user"></div>`);
+      messages.lastElementChild.textContent = text;
+      input.value = '';
+      sendBtn.disabled = true;
+      messages.scrollTop = messages.scrollHeight;
+
+      const typing = document.createElement('div');
+      typing.className = 'msg bot typing';
+      typing.innerHTML = '<span></span><span></span><span></span>';
+      messages.appendChild(typing);
+      messages.scrollTop = messages.scrollHeight;
+
+      setTimeout(() => {
+        typing.remove();
+        const botMsg = document.createElement('div');
+        botMsg.className = 'msg bot';
+        messages.appendChild(botMsg);
+        typewrite(botMsg, reply(text), {
+          onStep: () => { messages.scrollTop = messages.scrollHeight; },
+        });
+      }, 650);
+    }
+  }
+
+  // ---- Theme toggle ----
+  function initTheme() {
+    const root = document.documentElement;
+    const btn = document.getElementById('themeToggle');
+    const sun = document.getElementById('iconSun');
+    const moon = document.getElementById('iconMoon');
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+    function apply(theme) {
+      root.setAttribute('data-theme', theme);
+      sun.style.display = theme === 'dark' ? 'block' : 'none';
+      moon.style.display = theme === 'dark' ? 'none' : 'block';
+    }
+    // Default to the light/cream theme regardless of OS setting; the
+    // toggle lets you switch to the dark navy variant on demand.
+    apply('light');
+
+    btn.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      apply(next);
+    });
+  }
+
+  // ---- Topbar scroll shadow ----
+  function initScrollChrome() {
+    const topbar = document.querySelector('.topbar');
+    window.addEventListener('scroll', () => {
+      topbar.classList.toggle('scrolled', window.scrollY > 8);
+    }, { passive: true });
+  }
+
+  // Arm the failsafe before anything else runs: if any step below throws on
+  // some unpredictable mobile browser, this timer is already scheduled and
+  // will still force-reveal the page regardless.
+  armRevealFailsafe();
+
+  function safe(fn) {
+    try { fn(); } catch (e) { /* one failing step should never block the rest */ }
+  }
+
+  safe(() => renderStatGroup('statGrid', STATS));
+  safe(() => renderStatGroup('invoiceStatGrid', INVOICE_STATS));
+  safe(renderAttention);
+  safe(renderAgenda);
+  safe(renderActivity);
+  safe(renderFullTable);
+  safe(renderStatusBars);
+  safe(renderTrendChart);
+  safe(renderWeek);
+  safe(renderMail);
+  safe(renderInvoices);
+  safe(renderTodoSummary);
+  safe(renderTeams);
+  safe(renderSchedule);
+  safe(initTabs);
+  safe(initFilters);
+  safe(initWeekNav);
+  safe(initChat);
+  safe(initTheme);
+  safe(initScrollChrome);
+  safe(observeReveals);
+})();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
