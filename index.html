@@ -796,11 +796,13 @@
 
   .form-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
   .form-field label { font-size: 12.5px; font-weight: 700; color: var(--ink-secondary); }
-  .form-field input, .form-field select {
+  .form-field input, .form-field select, .form-field textarea {
     border: 1px solid var(--border); background: var(--bg-soft); color: var(--ink);
     padding: 10px 14px; border-radius: var(--r-sm); font-size: 14px; outline: none; width: 100%;
+    font-family: inherit;
   }
-  .form-field input:focus, .form-field select:focus { border-color: var(--accent); }
+  .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: var(--accent); }
+  .form-field textarea { resize: vertical; min-height: 140px; line-height: 1.5; }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
 
@@ -836,6 +838,35 @@
   .invoice-doc-note { margin-top: 18px; font-size: 12px; color: #8B93A6; }
   .invoice-doc-actions { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 30px; }
 
+  .email-doc {
+    background: #FFFFFF; color: #16223E; border-radius: var(--r-lg); box-shadow: var(--shadow-lg);
+    width: 100%; max-width: 620px; padding: 40px; flex-shrink: 0;
+    font-size: 14px; line-height: 1.6;
+    opacity: 0; transform: translateY(12px) scale(.98);
+    transition: opacity .2s ease, transform .22s cubic-bezier(.2,.8,.2,1);
+  }
+  .modal-overlay.open .email-doc { opacity: 1; transform: translateY(0) scale(1); }
+  .email-doc-top { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+  .email-doc-avatar {
+    width: 38px; height: 38px; border-radius: 50%; background: #2453EB; color: #FFFFFF;
+    display: flex; align-items: center; justify-content: center; font-weight: 800;
+    font-family: ui-rounded, "SF Pro Rounded", system-ui, sans-serif; flex-shrink: 0;
+  }
+  .email-doc-from strong { display: block; font-size: 14px; }
+  .email-doc-from span { font-size: 12px; color: #8B93A6; }
+  .email-doc-meta { border-top: 1px solid #E9E1CB; border-bottom: 1px solid #E9E1CB; padding: 14px 0; margin-bottom: 24px; }
+  .email-doc-meta div { display: flex; gap: 10px; font-size: 13px; padding: 3px 0; }
+  .email-doc-meta div span:first-child { color: #8B93A6; width: 56px; flex-shrink: 0; font-weight: 700; }
+  .email-doc-subject {
+    font-size: 19px; font-weight: 800; font-family: ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+    margin-bottom: 18px;
+  }
+  .email-doc-body { white-space: pre-wrap; }
+  .email-doc-actions {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    margin-top: 30px; padding-top: 20px; border-top: 1px solid #E9E1CB;
+  }
+
   @media print {
     body * { visibility: hidden; }
     .invoice-doc, .invoice-doc * { visibility: visible; }
@@ -846,6 +877,8 @@
     .form-row, .invoice-doc-parties, .invoice-doc-pay { grid-template-columns: 1fr; }
     .invoice-doc-meta { grid-template-columns: 1fr 1fr; }
     .invoice-doc { padding: 28px 20px; }
+    .email-doc { padding: 26px 18px; }
+    .email-doc-meta div span:first-child { width: 44px; }
   }
 </style>
 
@@ -1047,6 +1080,10 @@
           <h1>Mejl</h1>
           <div class="sub">AI-utkast kopplade till kansliets Outlook, prioriterade åt dig</div>
         </div>
+        <button class="btn-primary" id="newMailBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Nytt mejl
+        </button>
       </div>
 
       <div class="mail-hero reveal">
@@ -1279,6 +1316,44 @@
 <!-- Ny faktura: förhandsgranskning -->
 <div class="modal-overlay" id="invoicePreviewOverlay">
   <div class="invoice-doc" id="invoiceDoc"></div>
+</div>
+
+<!-- Nytt mejl: formulär -->
+<div class="modal-overlay" id="mailFormOverlay">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <div>
+        <h2>Nytt mejl</h2>
+        <p>Skriv mejlet här — det skickas direkt från kansliets Outlook.</p>
+      </div>
+      <button class="modal-close" id="mailFormClose" aria-label="Stäng">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <form id="mailForm">
+      <div class="form-field">
+        <label for="mailTill">Till</label>
+        <input type="email" id="mailTill" required>
+      </div>
+      <div class="form-field">
+        <label for="mailAmne">Ämne</label>
+        <input type="text" id="mailAmne" required>
+      </div>
+      <div class="form-field">
+        <label for="mailMeddelande">Meddelande</label>
+        <textarea id="mailMeddelande" required></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-ghost" id="mailFormCancel">Avbryt</button>
+        <button type="submit" class="btn-primary">Förhandsgranska</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Nytt mejl: förhandsgranskning -->
+<div class="modal-overlay" id="mailPreviewOverlay">
+  <div class="email-doc" id="mailDoc"></div>
 </div>
 
 <!-- Chat -->
@@ -1671,20 +1746,22 @@
       <div class="mail-row reveal" ${revealDelay(i)} data-idx="${i}">
         <div class="mail-row-top">
           <div>
-            <div class="mail-from">${m.from}</div>
+            <div class="mail-from">${m.sent ? `Till: ${m.to}` : m.from}</div>
             <div class="mail-subject">${m.subject}</div>
           </div>
-          <span class="priority-chip priority-${m.priority}">${prioLabel[m.priority]}</span>
-          <span class="mail-time tabular">Utkast ${m.time}</span>
+          ${m.sent
+            ? `<span class="status-chip status-klar"><span class="dot"></span>Skickat</span>`
+            : `<span class="priority-chip priority-${m.priority}">${prioLabel[m.priority]}</span>`}
+          <span class="mail-time tabular">${m.sent ? 'Skickat' : 'Utkast'} ${m.time}</span>
           <svg class="mail-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
         </div>
         <div class="mail-detail">
-          <div class="detail-label">AI-utkast, redo att granska</div>
+          <div class="detail-label">${m.sent ? 'Skickat av dig' : 'AI-utkast, redo att granska'}</div>
           <span class="mail-draft-text"></span>
-          <div class="detail-actions">
+          ${m.sent ? '' : `<div class="detail-actions">
             <button class="btn-primary" type="button">Skicka</button>
             <button class="btn-ghost" type="button">Redigera</button>
-          </div>
+          </div>`}
         </div>
       </div>`).join('');
 
@@ -1694,23 +1771,30 @@
         row.classList.toggle('open');
         if (row.classList.contains('open') && !row.dataset.typed) {
           row.dataset.typed = '1';
-          typewrite(row.querySelector('.mail-draft-text'), m.draft);
+          typewrite(row.querySelector('.mail-draft-text'), m.sent ? m.body : m.draft);
         }
       });
     });
 
+    const pendingCount = MAIL.filter(m => !m.sent).length;
     const mailHeroEl = document.getElementById('mailHeroTitle');
-    mailHeroEl.textContent = '';
-    mailHeroEl.dataset.type = `I natt skrev Kanslio ${MAIL.length} utkast åt dig`;
-    document.getElementById('mailNavBadge').textContent = MAIL.length;
+    const heroText = `I natt skrev Kanslio ${pendingCount} utkast åt dig`;
+    if (mailHeroEl.dataset.typed) {
+      mailHeroEl.textContent = heroText;
+    } else {
+      mailHeroEl.dataset.type = heroText;
+    }
+    document.getElementById('mailNavBadge').textContent = pendingCount;
+    observeReveals();
   }
 
   function renderTodoSummary() {
     const mailTitle = document.getElementById('todoMailTitle');
     const mailSub = document.getElementById('todoMailSub');
     if (mailTitle) {
-      const hogCount = MAIL.filter(m => m.priority === 'hog').length;
-      mailTitle.textContent = `${MAIL.length} mejlutkast redo att skickas`;
+      const pending = MAIL.filter(m => !m.sent);
+      const hogCount = pending.filter(m => m.priority === 'hog').length;
+      mailTitle.textContent = `${pending.length} mejlutkast redo att skickas`;
       if (mailSub) {
         mailSub.textContent = hogCount > 0
           ? `Kanslio skrev dem i natt — ${hogCount} är brådskande.`
@@ -1946,6 +2030,114 @@
         });
         closePreview();
         renderInvoices();
+      });
+    });
+  }
+
+  // ---- Nytt mejl: skriv och skicka ett riktigt mejl utan att lämna appen ----
+  const MAIL_EXAMPLES = [
+    { till: 'familjen.dahlberg@gmail.com', amne: 'Välkommen till klubben!',
+      meddelande: 'Hej familjen Dahlberg!\n\nVarmt välkomna till Västerås SK! Vi är glada att Liam ska spela med oss i P11 från och med hösten.\n\nFörsta träningen är tisdag 4 augusti kl. 17:30 på Björkhallens konstgräsplan. Ta med vattenflaska och fotbollsskor — matchtröja delas ut på plats.\n\nHör gärna av er om ni har några frågor innan dess!' },
+    { till: 'fritid@vasteras.se', amne: 'Fråga om lediga halltider i höst',
+      meddelande: 'Hej,\n\nVi planerar innebandysektionens träningsschema för höstterminen och undrar om det finns lediga tider i Björkhallen på tisdagar eller torsdagar mellan 17:00–20:00.\n\nTacksam för besked så snart som möjligt så vi kan lägga vårt schema.' },
+    { till: 'sponsor@byggmax.se', amne: 'Tack för säsongen – förslag på fortsatt samarbete',
+      meddelande: 'Hej,\n\nVi vill börja med att tacka för ert fina stöd under säsongen som gått — det har betytt mycket för våra ungdomslag.\n\nVi skulle gärna fortsätta samarbetet inför 2026/2027 och bifogar ett förslag på förnyat sponsoravtal. Hör gärna av er om ni vill boka ett kort avstämningsmöte.' },
+    { till: 'ledare.p12@vasterassk.se', amne: 'Schemaändring inför helgen',
+      meddelande: 'Hej!\n\nLördagens träning för P12 behöver flyttas från 10:00 till 12:00 på grund av en matchbokning i hallen.\n\nKan du meddela föräldragruppen? Hör av dig om tiden krockar med något.' },
+    { till: 'domaransvarig@fotbollsdistriktet.se', amne: 'Domarbehov höstens seriematcher',
+      meddelande: 'Hej,\n\nBifogar vårt matchschema för höstens seriematcher. Vi behöver domare till samtliga hemmamatcher enligt schemat, med start helgen 15–16 augusti.\n\nHör av er om något saknas eller behöver kompletteras.' },
+  ];
+  let mailExampleIndex = 0;
+
+  function nextMailExample() {
+    const ex = MAIL_EXAMPLES[mailExampleIndex % MAIL_EXAMPLES.length];
+    mailExampleIndex++;
+    return ex;
+  }
+
+  function formatDateTimeSv(d) {
+    return d.toLocaleDateString('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' }) +
+      ' kl. ' + d.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function buildEmailDocHTML(mail) {
+    return `
+      <div class="email-doc-top">
+        <div class="email-doc-avatar">K</div>
+        <div class="email-doc-from">
+          <strong>Kanslio (för Västerås SK)</strong>
+          <span>kansliet@vasterassk.se</span>
+        </div>
+      </div>
+      <div class="email-doc-meta">
+        <div><span>Till</span><span>${mail.till}</span></div>
+        <div><span>Skickat</span><span>${formatDateTimeSv(mail.datum)}</span></div>
+      </div>
+      <div class="email-doc-subject">${mail.amne}</div>
+      <div class="email-doc-body">${mail.meddelande}
+
+Med vänliga hälsningar
+Kansliet, Västerås SK</div>
+      <div class="email-doc-actions">
+        <button class="btn-ghost" id="mailBack" type="button">← Redigera</button>
+        <button class="btn-primary" id="mailSend" type="button">Skicka</button>
+      </div>
+    `;
+  }
+
+  function initMailComposer() {
+    const openBtn = document.getElementById('newMailBtn');
+    const formOverlay = document.getElementById('mailFormOverlay');
+    const previewOverlay = document.getElementById('mailPreviewOverlay');
+    const form = document.getElementById('mailForm');
+    if (!openBtn || !formOverlay || !previewOverlay || !form) return;
+
+    function openForm() {
+      const ex = nextMailExample();
+      document.getElementById('mailTill').value = ex.till;
+      document.getElementById('mailAmne').value = ex.amne;
+      document.getElementById('mailMeddelande').value = ex.meddelande;
+      formOverlay.classList.add('open');
+    }
+    function closeForm() { formOverlay.classList.remove('open'); }
+    function closePreview() { previewOverlay.classList.remove('open'); }
+
+    openBtn.addEventListener('click', openForm);
+    document.getElementById('mailFormClose').addEventListener('click', closeForm);
+    document.getElementById('mailFormCancel').addEventListener('click', closeForm);
+    formOverlay.addEventListener('click', (e) => { if (e.target === formOverlay) closeForm(); });
+    previewOverlay.addEventListener('click', (e) => { if (e.target === previewOverlay) closePreview(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      closeForm();
+      closePreview();
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const till = document.getElementById('mailTill').value.trim();
+      const amne = document.getElementById('mailAmne').value.trim();
+      const meddelande = document.getElementById('mailMeddelande').value.trim();
+      const mail = { till, amne, meddelande, datum: new Date() };
+
+      document.getElementById('mailDoc').innerHTML = buildEmailDocHTML(mail);
+      closeForm();
+      previewOverlay.classList.add('open');
+
+      document.getElementById('mailBack').addEventListener('click', () => {
+        closePreview();
+        formOverlay.classList.add('open');
+      });
+      document.getElementById('mailSend').addEventListener('click', () => {
+        MAIL.unshift({
+          to: mail.till,
+          subject: mail.amne,
+          body: `${mail.meddelande}\n\nMed vänliga hälsningar\nKansliet, Västerås SK`,
+          time: mail.datum.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }),
+          sent: true,
+        });
+        closePreview();
+        renderMail();
       });
     });
   }
@@ -2201,8 +2393,9 @@
         return 'Veckoschemat är byggt utifrån varje lags preferenser — Herrlaget A och Flickor P10 har alltid förtur på konstgräs, övriga lag fylls in runt dem. Vill du justera en preferens, säg bara vilket lag det gäller.';
       }
       if (t.includes('mejl') || t.includes('utkast') || t.includes('inkorg')) {
-        const hog = MAIL.filter(m => m.priority === 'hog').length;
-        return `I natt skrev jag ${MAIL.length} mejlutkast kopplade till Outlook, ${hog} med hög prioritet — bland annat svar till familjen Berg om medlemsavgiften och bekräftelsen till kommunen om hallbokningen.`;
+        const pending = MAIL.filter(m => !m.sent);
+        const hog = pending.filter(m => m.priority === 'hog').length;
+        return `I natt skrev jag ${pending.length} mejlutkast kopplade till Outlook, ${hog} med hög prioritet — bland annat svar till familjen Berg om medlemsavgiften och bekräftelsen till kommunen om hallbokningen.`;
       }
       if (t.includes('öppna') || t.includes('oppna')) {
         return 'Just nu är 24 ärenden öppna: 11 pågår aktivt, 7 väntar på svar och 6 är nya sedan i förrgår.';
@@ -2296,6 +2489,7 @@
   safe(renderTrendChart);
   safe(renderWeek);
   safe(renderMail);
+  safe(initMailComposer);
   safe(renderInvoices);
   safe(initInvoiceCreator);
   safe(renderTodoSummary);
