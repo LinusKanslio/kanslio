@@ -763,6 +763,34 @@
     to { transform: translate(50%, -50%) rotate(360deg); }
   }
 
+  .firework-layer {
+    position: absolute; right: -22px; bottom: 38px; width: 0; height: 0; z-index: 4; pointer-events: none;
+  }
+  .firework-spark {
+    position: absolute; top: 0; left: 0; width: 6px; height: 6px; border-radius: 50%;
+    opacity: 0; animation: firework-pop .9s ease-out forwards;
+  }
+  @keyframes firework-pop {
+    0% { transform: translate(0, 0) scale(.4); opacity: 1; }
+    65% { opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; }
+  }
+
+  .mission-celebrate {
+    display: none; align-items: center; gap: 12px; margin-top: 14px; padding: 14px 16px;
+    background: linear-gradient(135deg, var(--good-soft), var(--accent-soft));
+    border: 1px solid var(--border); border-radius: var(--r-md);
+    opacity: 0; transform: translateY(6px) scale(.97);
+  }
+  .mission-celebrate.show { display: flex; animation: mission-celebrate-in .5s cubic-bezier(.2,.8,.2,1) forwards; }
+  @keyframes mission-celebrate-in { to { opacity: 1; transform: translateY(0) scale(1); } }
+  .mission-celebrate-icon { font-size: 26px; line-height: 1; flex-shrink: 0; }
+  .mission-celebrate-title {
+    font-weight: 800; font-size: 15px; color: var(--ink);
+    font-family: ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+  }
+  .mission-celebrate-sub { font-size: 13px; color: var(--ink-secondary); margin-top: 2px; }
+
   .mission-toggle {
     display: flex; align-items: center; justify-content: center; gap: 7px;
     width: 100%; margin-top: 6px;
@@ -1094,6 +1122,7 @@
               <circle cx="37" cy="5" r="2.1" fill="var(--ink)"/>
             </svg>
           </span>
+          <span class="firework-layer" id="fireworkLayer" aria-hidden="true"></span>
           <div class="progress-fill">
             <span class="progress-ball" aria-hidden="true">
               <svg viewBox="0 0 24 24">
@@ -1107,6 +1136,13 @@
         <div class="progress-labels">
           <span>Start</span>
           <span>Mål &#8226; 100%</span>
+        </div>
+        <div class="mission-celebrate" id="missionCelebrate">
+          <span class="mission-celebrate-icon">🎉</span>
+          <div>
+            <div class="mission-celebrate-title">Bra jobbat, Erik!</div>
+            <div class="mission-celebrate-sub">Alla dagens uppdrag är klara.</div>
+          </div>
         </div>
         <button class="btn-ghost mission-toggle" id="missionToggle" type="button" aria-expanded="false">
           Visa uppdrag att göra
@@ -2076,6 +2112,37 @@
     });
   }
 
+  function spawnFireworkBurst(container, originX, originY, colors) {
+    const count = 12;
+    for (let i = 0; i < count; i++) {
+      const spark = document.createElement('span');
+      spark.className = 'firework-spark';
+      const angle = (Math.PI * 2 * i) / count + (Math.random() * 0.4 - 0.2);
+      const dist = 24 + Math.random() * 18;
+      spark.style.setProperty('--dx', `${(Math.cos(angle) * dist).toFixed(1)}px`);
+      spark.style.setProperty('--dy', `${(Math.sin(angle) * dist).toFixed(1)}px`);
+      spark.style.left = originX + 'px';
+      spark.style.top = originY + 'px';
+      spark.style.background = colors[i % colors.length];
+      spark.style.animationDelay = `${Math.round(Math.random() * 80)}ms`;
+      container.appendChild(spark);
+      setTimeout(() => spark.remove(), 1200);
+    }
+  }
+
+  function celebrateMissionComplete() {
+    const banner = document.getElementById('missionCelebrate');
+    if (banner) banner.classList.add('show');
+
+    const layer = document.getElementById('fireworkLayer');
+    if (!layer || prefersReducedMotion()) return;
+    const colors = ['#F5B942', '#2453EB', '#17A05B', '#E8556B'];
+    spawnFireworkBurst(layer, 0, 0, colors);
+    setTimeout(() => spawnFireworkBurst(layer, -12, -6, colors), 260);
+    setTimeout(() => spawnFireworkBurst(layer, 10, 6, colors), 520);
+  }
+
+  let missionCelebrated = false;
   function renderProgress() {
     const { total, done, percent } = computeMissionProgress();
     const sub = document.getElementById('progressSub');
@@ -2093,6 +2160,18 @@
         percentEl.dataset.target = percent;
       }
     }
+
+    if (total > 0 && done === total) {
+      if (!missionCelebrated) {
+        missionCelebrated = true;
+        celebrateMissionComplete();
+      }
+    } else {
+      missionCelebrated = false;
+      const banner = document.getElementById('missionCelebrate');
+      if (banner) banner.classList.remove('show');
+    }
+
     renderMissionList();
   }
 
