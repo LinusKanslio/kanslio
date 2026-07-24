@@ -1781,6 +1781,7 @@
     if (heroEl) heroEl.textContent = `Kanslio har redan skrivit ${draftCount} fakturautkast åt dig`;
     const badge = document.getElementById('invoiceNavBadge');
     if (badge) badge.textContent = draftCount;
+    observeReveals();
   }
 
   // ---- Ny faktura: skapa en riktig, ifylld exempelfaktura att förhandsgranska ----
