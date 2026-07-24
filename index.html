@@ -451,6 +451,41 @@
     padding: 4px 10px; border-radius: var(--r-pill); white-space: nowrap;
   }
 
+  /* ---------- Tid sparad ---------- */
+  .time-teaser { display: flex; align-items: center; gap: 16px; padding: 4px 0 18px; }
+  .time-teaser-icon {
+    width: 46px; height: 46px; border-radius: 14px; flex-shrink: 0;
+    background: var(--accent); color: var(--on-accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .time-teaser-value {
+    font-family: ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+    font-weight: 800; font-size: 30px; color: var(--accent-strong); line-height: 1;
+  }
+  .time-teaser-value .unit { font-size: 15px; font-weight: 700; margin-left: 3px; color: var(--ink-secondary); }
+  .time-teaser-sub { font-size: 13px; color: var(--ink-secondary); margin-top: 4px; }
+  .time-teaser-list { display: flex; flex-direction: column; gap: 9px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 13.5px; color: var(--ink-secondary); }
+  .time-teaser-list b { color: var(--ink); }
+
+  .time-hero {
+    display: flex; align-items: center; gap: 22px; padding: 26px 28px; flex-wrap: wrap;
+    background: linear-gradient(135deg, var(--accent-soft), var(--surface));
+    border: 1px solid var(--border); border-radius: var(--r-lg);
+  }
+  .time-hero-icon {
+    width: 60px; height: 60px; border-radius: 18px; flex-shrink: 0;
+    background: var(--accent); color: var(--on-accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .time-hero-text { flex: 1; min-width: 240px; }
+  .time-hero-value {
+    font-family: ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+    font-weight: 800; font-size: 42px; color: var(--accent-strong); line-height: 1;
+  }
+  .time-hero-value .unit { font-size: 19px; font-weight: 700; margin-left: 4px; color: var(--ink-secondary); }
+  .time-hero-sub { font-size: 14px; color: var(--ink-secondary); margin-top: 7px; }
+  .time-hero-since { font-size: 12.5px; color: var(--ink-muted); margin-top: 9px; }
+
   /* ---------- Att göra idag ---------- */
   .todo-row {
     display: flex; align-items: center; gap: 16px; padding: 16px 4px;
@@ -753,11 +788,6 @@
   .mission-row-title { font-weight: 700; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .mission-row-sub { font-size: 12.5px; color: var(--ink-secondary); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .mission-row-action { flex-shrink: 0; padding: 7px 13px; font-size: 12.5px; }
-  .mission-row.done-flash { animation: mission-flash .5s ease; }
-  @keyframes mission-flash {
-    0% { background: var(--good-soft); }
-    100% { background: transparent; }
-  }
 
   /* ---------- Pulse: "live" indicators ---------- */
   .chat-launcher .badge { animation: pulse-good 2.2s ease-out infinite; }
@@ -946,6 +976,10 @@
         <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg></span>
         <span class="nav-label">Ärenden</span>
       </button>
+      <button class="nav-item" role="tab" aria-selected="false" data-view="statistik">
+        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+        <span class="nav-label">Statistik</span>
+      </button>
       <button class="nav-item" role="tab" aria-selected="false" data-view="rapporter">
         <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M11 20V4M18 20v-6"/></svg></span>
         <span class="nav-label">Rapporter</span>
@@ -1010,7 +1044,7 @@
       </div>
 
       <div class="card card-pad reveal">
-        <div class="card-head"><h2>Att göra idag</h2></div>
+        <div class="card-head"><h2>Viktigast idag</h2></div>
         <div class="todo-row">
           <div class="todo-icon todo-icon-blue">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 7l9 6 9-6"/></svg>
@@ -1086,14 +1120,23 @@
       </div>
 
       <div class="content-grid">
-        <div class="card card-pad">
+        <div class="card card-pad reveal">
           <div class="card-head">
-            <h2>Kräver uppmärksamhet</h2>
-            <button class="link" data-goto="arenden">Visa alla ärenden
+            <h2>Tid du sparat med Kanslio</h2>
+            <button class="link" data-goto="statistik">Visa statistik
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
             </button>
           </div>
-          <div id="attentionList"></div>
+          <div class="time-teaser">
+            <div class="time-teaser-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            </div>
+            <div>
+              <div class="time-teaser-value tabular" data-format="int" id="teaserHours">0<span class="unit"> timmar</span></div>
+              <div class="time-teaser-sub" id="teaserSub">sparade denna månad</div>
+            </div>
+          </div>
+          <div class="time-teaser-list" id="teaserList"></div>
         </div>
 
         <div class="col-stack">
@@ -1277,6 +1320,40 @@
       <div class="card card-pad">
         <div class="card-head"><h2>Föreslaget veckoschema</h2></div>
         <div class="week-grid" id="scheduleGrid"></div>
+      </div>
+    </section>
+
+    <!-- STATISTIK -->
+    <section class="view" id="view-statistik">
+      <div class="page-head">
+        <div>
+          <h1>Statistik</h1>
+          <div class="sub">Vad Kanslio faktiskt sparar åt kansliet</div>
+        </div>
+      </div>
+
+      <div class="time-hero reveal">
+        <div class="time-hero-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        </div>
+        <div class="time-hero-text">
+          <div class="time-hero-value tabular" data-format="int" id="heroHours">0<span class="unit"> timmar</span></div>
+          <div class="time-hero-sub" id="heroSub">sparade denna månad</div>
+          <div class="time-hero-since" id="heroSince"></div>
+        </div>
+      </div>
+
+      <div class="stat-grid" id="statistikGrid">
+        <!-- stat cards injected by JS -->
+      </div>
+
+      <div class="card card-pad">
+        <div class="card-head"><h2>Tid sparad per vecka, senaste 8 veckorna</h2></div>
+        <div class="chart-svg-wrap" id="timeSavedWrap">
+          <svg id="timeSavedChart" viewBox="0 0 520 220" width="100%" height="220" role="img" aria-label="Trend över tid sparad de senaste åtta veckorna"></svg>
+          <div class="chart-tooltip" id="timeSavedTooltip"></div>
+        </div>
+        <div class="insight" id="timeSavedInsight"></div>
       </div>
     </section>
 
@@ -1564,6 +1641,38 @@
     { label: 'v29', value: 13 }, { label: 'v30', value: 18 },
   ];
 
+  // ---- Statistik: tid Kanslio sparar åt kansliet ----
+  const TIME_SAVED_ITEMS = [
+    { label: 'Mejl skrivna automatiskt', count: 142, minutesEach: 6, icon: 'mail', goto: 'mejl',
+      trend: [14, 26, 45, 68, 92, 118, 142] },
+    { label: 'Fakturor skapade automatiskt', count: 28, minutesEach: 12, icon: 'receipt', goto: 'fakturor',
+      trend: [2, 6, 10, 14, 18, 23, 28] },
+    { label: 'Betalningar matchade automatiskt', count: 86, minutesEach: 4, icon: 'sync', goto: 'fakturor',
+      trend: [10, 22, 34, 48, 60, 74, 86] },
+    { label: 'Ärenden bevakade & sorterade', count: 96, minutesEach: 5, icon: 'folder', goto: 'arenden',
+      trend: [15, 28, 40, 55, 68, 82, 96] },
+  ];
+
+  const TIME_SAVED_WEEKLY = [
+    { label: 'v23', value: 7 }, { label: 'v24', value: 7.5 }, { label: 'v25', value: 6.5 },
+    { label: 'v26', value: 8 }, { label: 'v27', value: 8.5 }, { label: 'v28', value: 9 },
+    { label: 'v29', value: 8.5 }, { label: 'v30', value: 10 },
+  ];
+
+  const KR_PER_HOUR = 320;
+
+  function hoursFor(item) { return (item.count * item.minutesEach) / 60; }
+  function totalHoursSaved() { return TIME_SAVED_ITEMS.reduce((sum, i) => sum + hoursFor(i), 0); }
+  function totalKrSaved() { return totalHoursSaved() * KR_PER_HOUR; }
+
+  function buildTimeSavedStats() {
+    return TIME_SAVED_ITEMS.map(i => ({
+      label: i.label, value: i.count, unit: '', format: 'int',
+      delta: `≈ ${Math.round(hoursFor(i))} tim sparade`, deltaType: 'good',
+      trend: i.trend, icon: i.icon, goto: i.goto,
+    }));
+  }
+
   const WEEKS = [
     {
       label: 'Vecka 30 · 20–24 jul',
@@ -1619,6 +1728,8 @@
     check: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/>',
     gauge: '<path d="M12 12L16 8"/><circle cx="12" cy="12" r="9"/><path d="M7 15a6 6 0 0110 0"/>',
     receipt: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/>',
+    mail: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 7l9 6 9-6"/>',
+    sync: '<path d="M21 12a9 9 0 01-9 9 9 9 0 01-9-9 9 9 0 019-9c2.5 0 4.7 1.1 6.2 2.8"/><path d="M21 3v6h-6"/>',
   }[name] || '');
 
   const svgIcon = (name, size=18) =>
@@ -1928,7 +2039,6 @@
     const c = CASES[idx];
     if (!c || c.status === 'klar') return;
     c.status = 'klar';
-    renderAttention();
     renderTodoSummary();
     if (document.getElementById('fullTable')) renderFullTable();
     renderProgress();
@@ -2367,17 +2477,32 @@ Kansliet, Västerås SK</div>
       </div>`).join('');
   }
 
-  function renderAttention() {
-    document.getElementById('attentionList').innerHTML = getAttentionCases().map((c, idx) => `
-      <div class="case-row reveal" ${revealDelay(idx)}>
-        <div class="case-main">
-          <div class="case-title">${c.title}</div>
-          <div class="case-client">${c.client}</div>
-        </div>
-        ${statusChip(c.status)}
-        <div class="case-deadline">${c.deadline}</div>
-      </div>`).join('');
-    observeReveals();
+  function renderTimeSaved() {
+    const hours = Math.round(totalHoursSaved());
+    const krText = (Math.round(totalKrSaved() / 100) * 100).toLocaleString('sv-SE') + ' kr';
+
+    const teaserHours = document.getElementById('teaserHours');
+    if (teaserHours) teaserHours.dataset.target = hours;
+    const teaserSub = document.getElementById('teaserSub');
+    if (teaserSub) teaserSub.innerHTML = `sparade denna månad — ≈ <b>${krText}</b> i administrationstid`;
+    const teaserList = document.getElementById('teaserList');
+    if (teaserList) {
+      teaserList.innerHTML = TIME_SAVED_ITEMS.map(i =>
+        `<div><b>${i.count}</b> ${i.label.charAt(0).toLowerCase()}${i.label.slice(1)}</div>`).join('');
+    }
+
+    const heroHours = document.getElementById('heroHours');
+    if (heroHours) heroHours.dataset.target = hours;
+    const heroSub = document.getElementById('heroSub');
+    if (heroSub) heroSub.innerHTML = `sparade denna månad — motsvarar ungefär <b>${krText}</b> i administrationstid`;
+    const heroSince = document.getElementById('heroSince');
+    if (heroSince) heroSince.textContent = '286 timmar sparade sedan ni började med Kanslio i mars 2026.';
+
+    const insight = document.getElementById('timeSavedInsight');
+    if (insight) {
+      const lastWeek = TIME_SAVED_WEEKLY[TIME_SAVED_WEEKLY.length - 1].value;
+      insight.innerHTML = `Kanslio sparade <b>${lastWeek} timmar</b> åt kansliet förra veckan — mest hittills.`;
+    }
   }
 
   function renderAgenda() {
@@ -2432,11 +2557,12 @@ Kansliet, Västerås SK</div>
     });
   }
 
-  function renderTrendChart() {
-    const svg = document.getElementById('trendChart');
-    const tooltip = document.getElementById('trendTooltip');
+  function renderTrendChart(svgId, tooltipId, wrapId, data, tooltipLabel) {
+    const svg = document.getElementById(svgId);
+    const tooltip = document.getElementById(tooltipId);
+    if (!svg || !tooltip) return;
     const W = 520, H = 220, PAD = 28;
-    const values = WEEKLY_TREND.map(d => d.value);
+    const values = data.map(d => d.value);
     const max = Math.max(...values), min = 0;
     const stepX = (W - PAD * 2) / (values.length - 1);
     const yFor = v => H - PAD - ((v - min) / (max - min)) * (H - PAD * 2);
@@ -2458,31 +2584,31 @@ Kansliet, Västerås SK</div>
         fill="${isLast ? 'var(--accent)' : 'var(--surface)'}" stroke="var(--accent)" stroke-width="2" style="cursor:pointer;"/>`;
     }).join('');
 
-    const labels = WEEKLY_TREND.map((d, i) =>
+    const labels = data.map((d, i) =>
       `<text x="${pts[i][0].toFixed(1)}" y="${H - 6}" font-size="11" fill="var(--ink-muted)" text-anchor="middle">${d.label}</text>`).join('');
 
     svg.innerHTML = `
-      <defs><linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
+      <defs><linearGradient id="${svgId}Fill" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="var(--accent)" stop-opacity=".22"/>
         <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
       </linearGradient></defs>
       ${grid}
-      <path d="${area}" fill="url(#trendFill)" stroke="none"/>
+      <path d="${area}" fill="url(#${svgId}Fill)" stroke="none"/>
       <path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
       ${dots}
-      <text x="${last[0].toFixed(1)}" y="${(last[1] - 12).toFixed(1)}" font-size="12" font-weight="700" fill="var(--accent-strong)" text-anchor="middle">${WEEKLY_TREND[WEEKLY_TREND.length-1].value}</text>
+      <text x="${last[0].toFixed(1)}" y="${(last[1] - 12).toFixed(1)}" font-size="12" font-weight="700" fill="var(--accent-strong)" text-anchor="middle">${data[data.length-1].value}</text>
       ${labels}
     `;
 
     svg.querySelectorAll('.trend-dot').forEach(dot => {
       dot.addEventListener('mouseenter', (e) => {
         const i = parseInt(dot.dataset.i, 10);
-        const d = WEEKLY_TREND[i];
+        const d = data[i];
         const rect = svg.getBoundingClientRect();
-        const wrapRect = document.getElementById('trendWrap').getBoundingClientRect();
+        const wrapRect = document.getElementById(wrapId).getBoundingClientRect();
         const x = parseFloat(dot.getAttribute('cx')) / W * rect.width + (rect.left - wrapRect.left);
         const y = parseFloat(dot.getAttribute('cy')) / H * rect.height + (rect.top - wrapRect.top);
-        tooltip.textContent = `${d.label}: ${d.value} avslutade`;
+        tooltip.textContent = tooltipLabel(d);
         tooltip.style.left = x + 'px';
         tooltip.style.top = y + 'px';
         tooltip.classList.add('show');
@@ -2679,12 +2805,14 @@ Kansliet, Västerås SK</div>
 
   safe(() => renderStatGroup('statGrid', STATS));
   safe(() => renderStatGroup('invoiceStatGrid', INVOICE_STATS));
-  safe(renderAttention);
+  safe(() => renderStatGroup('statistikGrid', buildTimeSavedStats()));
+  safe(renderTimeSaved);
   safe(renderAgenda);
   safe(renderActivity);
   safe(renderFullTable);
   safe(renderStatusBars);
-  safe(renderTrendChart);
+  safe(() => renderTrendChart('trendChart', 'trendTooltip', 'trendWrap', WEEKLY_TREND, d => `${d.label}: ${d.value} avslutade`));
+  safe(() => renderTrendChart('timeSavedChart', 'timeSavedTooltip', 'timeSavedWrap', TIME_SAVED_WEEKLY, d => `${d.label}: ${d.value} tim sparade`));
   safe(renderWeek);
   safe(initMissionBaseline);
   safe(renderMail);
