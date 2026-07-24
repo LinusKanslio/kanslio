@@ -728,6 +728,37 @@
     to { transform: translate(50%, -50%) rotate(360deg); }
   }
 
+  .mission-toggle {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    width: 100%; margin-top: 6px;
+  }
+  .mission-toggle svg { transition: transform .2s ease; flex-shrink: 0; }
+  .mission-toggle.open svg { transform: rotate(180deg); }
+  .mission-list { display: none; flex-direction: column; }
+  .mission-list.open { display: flex; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); gap: 4px; }
+  .mission-empty { font-size: 13.5px; color: var(--ink-secondary); padding: 10px 4px; }
+  .mission-row {
+    display: flex; align-items: center; gap: 12px; padding: 10px 8px; border-radius: var(--r-md);
+    cursor: pointer; transition: background .15s ease;
+  }
+  .mission-row:hover { background: var(--bg-soft); }
+  .mission-row-icon {
+    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mission-icon-mejl { background: var(--accent-soft); color: var(--accent-strong); }
+  .mission-icon-faktura { background: var(--good-soft); color: var(--good-ink); }
+  .mission-icon-arende { background: var(--warn-soft); color: var(--warn-ink); }
+  .mission-row-text { flex: 1; min-width: 0; }
+  .mission-row-title { font-weight: 700; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mission-row-sub { font-size: 12.5px; color: var(--ink-secondary); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mission-row-action { flex-shrink: 0; padding: 7px 13px; font-size: 12.5px; }
+  .mission-row.done-flash { animation: mission-flash .5s ease; }
+  @keyframes mission-flash {
+    0% { background: var(--good-soft); }
+    100% { background: transparent; }
+  }
+
   /* ---------- Pulse: "live" indicators ---------- */
   .chat-launcher .badge { animation: pulse-good 2.2s ease-out infinite; }
   .chat-head .titles .status .dot { animation: pulse-good 2.2s ease-out infinite; }
@@ -1018,7 +1049,7 @@
             <h2>Dagens uppdrag</h2>
             <div class="progress-sub" id="progressSub">1 av 10 uppdrag klara idag</div>
           </div>
-          <div class="progress-percent-value tabular" data-target="10" data-format="int">0<span class="unit">%</span></div>
+          <div class="progress-percent-value tabular" data-format="int">0<span class="unit">%</span></div>
         </div>
         <div class="progress-track">
           <span class="progress-goal" aria-hidden="true">
@@ -1029,7 +1060,7 @@
               <circle cx="37" cy="5" r="2.1" fill="var(--ink)"/>
             </svg>
           </span>
-          <div class="progress-fill" data-width="10%">
+          <div class="progress-fill">
             <span class="progress-ball" aria-hidden="true">
               <svg viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="9.6" fill="#FFFFFF" stroke="#16223E" stroke-width="1.1"/>
@@ -1043,6 +1074,11 @@
           <span>Start</span>
           <span>Mål &#8226; 100%</span>
         </div>
+        <button class="btn-ghost mission-toggle" id="missionToggle" type="button" aria-expanded="false">
+          Visa uppdrag att göra
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="mission-list" id="missionList"></div>
       </div>
 
       <div class="stat-grid" id="statGrid">
@@ -1404,7 +1440,9 @@
     { title: 'Ledarutbildning – anmälan', client: 'SISU Idrottsutbildarna', status: 'ny', assignee: 'Maria Lindqvist', initials: 'ML', deadline: '3 aug' },
   ];
 
-  const ATTENTION = CASES.filter(c => c.status !== 'klar').slice(0, 5);
+  function getAttentionCases() {
+    return CASES.filter(c => c.status !== 'klar').slice(0, 5);
+  }
 
   const AGENDA = [
     { time: '09:00', title: 'Möte – hallbokning med kommunen', kind: 'meeting' },
@@ -1766,7 +1804,8 @@
       </div>`).join('');
 
     document.querySelectorAll('#mailList .mail-row').forEach(row => {
-      const m = MAIL[parseInt(row.dataset.idx, 10)];
+      const idx = parseInt(row.dataset.idx, 10);
+      const m = MAIL[idx];
       row.querySelector('.mail-row-top').addEventListener('click', () => {
         row.classList.toggle('open');
         if (row.classList.contains('open') && !row.dataset.typed) {
@@ -1774,6 +1813,13 @@
           typewrite(row.querySelector('.mail-draft-text'), m.sent ? m.body : m.draft);
         }
       });
+      const sendBtn = row.querySelector('.detail-actions .btn-primary');
+      if (sendBtn) {
+        sendBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          sendMailDraft(idx);
+        });
+      }
     });
 
     const pendingCount = MAIL.filter(m => !m.sent).length;
@@ -1786,6 +1832,17 @@
     }
     document.getElementById('mailNavBadge').textContent = pendingCount;
     observeReveals();
+  }
+
+  function sendMailDraft(idx) {
+    const m = MAIL[idx];
+    if (!m || m.sent) return;
+    m.to = m.from;
+    m.body = m.draft;
+    m.sent = true;
+    m.time = new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+    renderMail();
+    renderProgress();
   }
 
   function renderTodoSummary() {
@@ -1811,11 +1868,133 @@
     const caseTitle = document.getElementById('todoCaseTitle');
     const caseSub = document.getElementById('todoCaseSub');
     if (caseTitle) {
-      caseTitle.textContent = `${ATTENTION.length} ärenden kräver uppmärksamhet`;
-      if (caseSub && ATTENTION.length > 0) {
-        caseSub.textContent = `Närmast i tid: ${ATTENTION[0].title}, ${ATTENTION[0].deadline}.`;
+      const attention = getAttentionCases();
+      caseTitle.textContent = `${attention.length} ärenden kräver uppmärksamhet`;
+      if (caseSub && attention.length > 0) {
+        caseSub.textContent = `Närmast i tid: ${attention[0].title}, ${attention[0].deadline}.`;
       }
     }
+  }
+
+  // ---- Dagens uppdrag: progressbaren kopplad till vad som faktiskt ligger i inkorgen ----
+  const MISSION_ICON = {
+    mejl: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 7l9 6 9-6"/></svg>',
+    faktura: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg>',
+    arende: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>',
+  };
+
+  function getMissionItems() {
+    const items = [];
+    MAIL.forEach((m, i) => {
+      if (!m.sent) items.push({ type: 'mejl', key: `mail-${i}`, title: m.from, sub: m.subject, goto: 'mejl', idx: i });
+    });
+    INVOICES.forEach((inv, i) => {
+      if (inv.status === 'pagar') items.push({ type: 'faktura', key: `inv-${i}`, title: inv.title, sub: inv.sub, goto: 'fakturor', idx: i });
+    });
+    CASES.forEach((c, i) => {
+      if (c.status !== 'klar') items.push({ type: 'arende', key: `case-${i}`, title: c.title, sub: c.client, goto: 'arenden', idx: i });
+    });
+    return items;
+  }
+
+  let missionBaselineKeys = [];
+  function initMissionBaseline() {
+    missionBaselineKeys = getMissionItems().map(i => i.key);
+  }
+
+  function computeMissionProgress() {
+    const pendingKeys = new Set(getMissionItems().map(i => i.key));
+    const total = missionBaselineKeys.length;
+    const done = missionBaselineKeys.filter(k => !pendingKeys.has(k)).length;
+    const percent = total ? Math.round((done / total) * 100) : 100;
+    return { total, done, percent };
+  }
+
+  function animateNumberTo(el, from, to) {
+    const unitHtml = '<span class="unit">%</span>';
+    if (prefersReducedMotion()) { el.innerHTML = to + unitHtml; return; }
+    const start = performance.now();
+    const dur = 700;
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / dur);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.innerHTML = Math.round(from + (to - from) * eased) + unitHtml;
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  function resolveCase(idx) {
+    const c = CASES[idx];
+    if (!c || c.status === 'klar') return;
+    c.status = 'klar';
+    renderAttention();
+    renderTodoSummary();
+    if (document.getElementById('fullTable')) renderFullTable();
+    renderProgress();
+  }
+
+  function renderMissionList() {
+    const list = document.getElementById('missionList');
+    if (!list) return;
+    const items = getMissionItems();
+    if (items.length === 0) {
+      list.innerHTML = '<div class="mission-empty">Allt är klart för idag — bra jobbat! 🎉</div>';
+      return;
+    }
+    list.innerHTML = items.map((m) => `
+      <div class="mission-row" data-key="${m.key}">
+        <div class="mission-row-icon mission-icon-${m.type}">${MISSION_ICON[m.type]}</div>
+        <div class="mission-row-text">
+          <div class="mission-row-title">${m.title}</div>
+          <div class="mission-row-sub">${m.sub}</div>
+        </div>
+        <button class="btn-ghost mission-row-action" type="button">${m.type === 'arende' ? 'Markera klar' : 'Skicka'}</button>
+      </div>`).join('');
+
+    list.querySelectorAll('.mission-row').forEach((row) => {
+      const key = row.dataset.key;
+      const item = items.find((m) => m.key === key);
+      if (!item) return;
+      row.addEventListener('click', () => activate(item.goto));
+      row.querySelector('.mission-row-action').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (item.type === 'mejl') sendMailDraft(item.idx);
+        else if (item.type === 'faktura') sendInvoiceDraft(item.idx);
+        else if (item.type === 'arende') resolveCase(item.idx);
+      });
+    });
+  }
+
+  function renderProgress() {
+    const { total, done, percent } = computeMissionProgress();
+    const sub = document.getElementById('progressSub');
+    if (sub) sub.textContent = `${done} av ${total} uppdrag klara idag`;
+
+    const fill = document.querySelector('.progress-fill');
+    const percentEl = document.querySelector('.progress-percent-value');
+    if (fill && percentEl) {
+      if (fill.dataset.animated) {
+        fill.style.width = percent + '%';
+        const from = parseFloat(percentEl.textContent) || 0;
+        animateNumberTo(percentEl, from, percent);
+      } else {
+        fill.dataset.width = percent + '%';
+        percentEl.dataset.target = percent;
+      }
+    }
+    renderMissionList();
+  }
+
+  function initMissionToggle() {
+    const btn = document.getElementById('missionToggle');
+    const list = document.getElementById('missionList');
+    if (!btn || !list) return;
+    btn.addEventListener('click', () => {
+      const open = list.classList.toggle('open');
+      btn.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
   }
 
   function renderInvoices() {
@@ -1857,7 +2036,15 @@
       </div>`).join('');
 
     document.querySelectorAll('#invoiceTable .invoice-item').forEach(item => {
+      const idx = parseInt(item.dataset.idx, 10);
       item.querySelector('.invoice-row').addEventListener('click', () => item.classList.toggle('open'));
+      const sendBtn = item.querySelector('.detail-actions .btn-primary');
+      if (sendBtn) {
+        sendBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          sendInvoiceDraft(idx);
+        });
+      }
     });
 
     const draftCount = INVOICES.filter(i => i.status === 'pagar').length;
@@ -1866,6 +2053,16 @@
     const badge = document.getElementById('invoiceNavBadge');
     if (badge) badge.textContent = draftCount;
     observeReveals();
+  }
+
+  function sendInvoiceDraft(idx) {
+    const inv = INVOICES[idx];
+    if (!inv || inv.status !== 'pagar') return;
+    inv.status = 'ny';
+    inv.due = 'Skickad idag';
+    inv.note = `Skickad ${formatDateSv(new Date())}. Väntar på betalning.`;
+    renderInvoices();
+    renderProgress();
   }
 
   // ---- Ny faktura: skapa en riktig, ifylld exempelfaktura att förhandsgranska ----
@@ -2171,7 +2368,7 @@ Kansliet, Västerås SK</div>
   }
 
   function renderAttention() {
-    document.getElementById('attentionList').innerHTML = ATTENTION.map((c, idx) => `
+    document.getElementById('attentionList').innerHTML = getAttentionCases().map((c, idx) => `
       <div class="case-row reveal" ${revealDelay(idx)}>
         <div class="case-main">
           <div class="case-title">${c.title}</div>
@@ -2180,6 +2377,7 @@ Kansliet, Västerås SK</div>
         ${statusChip(c.status)}
         <div class="case-deadline">${c.deadline}</div>
       </div>`).join('');
+    observeReveals();
   }
 
   function renderAgenda() {
@@ -2317,17 +2515,17 @@ Kansliet, Västerås SK</div>
   }
 
   // ---- Sidebar navigation ----
+  function activate(view) {
+    document.querySelectorAll('.nav-item[data-view]').forEach(b => {
+      const isActive = b.dataset.view === view;
+      b.classList.toggle('active', isActive);
+      b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+    document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
+  }
+
   function initTabs() {
     const btns = [...document.querySelectorAll('.nav-item[data-view]')];
-
-    function activate(view) {
-      btns.forEach(b => {
-        const isActive = b.dataset.view === view;
-        b.classList.toggle('active', isActive);
-        b.setAttribute('aria-selected', isActive ? 'true' : 'false');
-      });
-      document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
-    }
     btns.forEach(b => b.addEventListener('click', () => activate(b.dataset.view)));
     document.querySelectorAll('[data-goto]').forEach(el => el.addEventListener('click', () => activate(el.dataset.goto)));
   }
@@ -2488,11 +2686,14 @@ Kansliet, Västerås SK</div>
   safe(renderStatusBars);
   safe(renderTrendChart);
   safe(renderWeek);
+  safe(initMissionBaseline);
   safe(renderMail);
   safe(initMailComposer);
   safe(renderInvoices);
   safe(initInvoiceCreator);
   safe(renderTodoSummary);
+  safe(renderProgress);
+  safe(initMissionToggle);
   safe(renderTeams);
   safe(renderSchedule);
   safe(initTabs);
