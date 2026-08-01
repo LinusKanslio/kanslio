@@ -1117,18 +1117,6 @@
         <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="15" r="5.5"/><circle cx="9" cy="15" r="1.4" fill="currentColor" stroke="none"/><path d="M13.2 11.2L19 5.5M19 5.5h-4.3M19 5.5v4.3"/></svg></span>
         <span class="nav-label">Schema</span>
       </button>
-      <button class="nav-item" role="tab" aria-selected="false" data-view="arenden">
-        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg></span>
-        <span class="nav-label">Ärenden</span>
-      </button>
-      <button class="nav-item" role="tab" aria-selected="false" data-view="statistik">
-        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
-        <span class="nav-label">Statistik</span>
-      </button>
-      <button class="nav-item" role="tab" aria-selected="false" data-view="rapporter">
-        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M11 20V4M18 20v-6"/></svg></span>
-        <span class="nav-label">Rapporter</span>
-      </button>
       <button class="nav-item" role="tab" aria-selected="false" data-view="mitt-kanslio">
         <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="10" cy="6" r="3.5"/><path d="M22 20v-2a4 4 0 00-3-3.87M15.5 2.63A3.5 3.5 0 0117.5 9.5"/></svg></span>
         <span class="nav-label">Mitt Kanslio</span>
@@ -1214,16 +1202,6 @@
           </div>
           <button class="btn-primary" data-goto="fakturor">Granska</button>
         </div>
-        <div class="todo-row">
-          <div class="todo-icon todo-icon-amber">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
-          </div>
-          <div class="todo-text">
-            <div class="todo-title" id="todoCaseTitle">Ärenden kräver uppmärksamhet</div>
-            <div class="todo-sub" id="todoCaseSub">Se listan längre ner på sidan.</div>
-          </div>
-          <button class="btn-primary" data-goto="arenden">Visa</button>
-        </div>
       </div>
 
       <div class="card card-pad progress-card reveal">
@@ -1280,7 +1258,7 @@
         <div class="card card-pad reveal">
           <div class="card-head">
             <h2>Tid du sparat med Kanslio</h2>
-            <button class="link" data-goto="statistik">Visa statistik
+            <button class="link" data-goto="mitt-kanslio">Visa statistik
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
             </button>
           </div>
@@ -1381,44 +1359,6 @@
       </div>
     </section>
 
-    <!-- ÄRENDEN -->
-    <section class="view" id="view-arenden">
-      <div class="page-head">
-        <div>
-          <h1>Ärenden</h1>
-          <div class="sub">Visar de 8 senaste ärendena av totalt 24 öppna</div>
-        </div>
-        <button class="btn-primary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-          Nytt ärende
-        </button>
-      </div>
-
-      <div class="card card-pad">
-        <div class="filter-row">
-          <div class="pill-filters" id="statusFilters">
-            <button class="pill-filter active" data-status="alla">Alla</button>
-            <button class="pill-filter" data-status="ny">Ny</button>
-            <button class="pill-filter" data-status="pagar">Pågår</button>
-            <button class="pill-filter" data-status="vantar">Väntar svar</button>
-            <button class="pill-filter" data-status="klar">Klar</button>
-          </div>
-          <label class="search" style="display:flex; width:240px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-            <input type="text" placeholder="Filtrera lista…" id="tableSearch" />
-          </label>
-        </div>
-
-        <div class="table-wrap" style="margin-top:14px;">
-          <div class="table-head">
-            <div>Ärende</div><div>Klient</div><div>Status</div><div>Ansvarig</div><div>Deadline</div>
-          </div>
-          <div id="fullTable"></div>
-        </div>
-        <div class="footnote" id="tableEmpty" style="display:none;">Inga ärenden matchar filtret.</div>
-      </div>
-    </section>
-
     <!-- KALENDER -->
     <section class="view" id="view-kalender">
       <div class="page-head">
@@ -1480,67 +1420,6 @@
       </div>
     </section>
 
-    <!-- STATISTIK -->
-    <section class="view" id="view-statistik">
-      <div class="page-head">
-        <div>
-          <h1>Statistik</h1>
-          <div class="sub">Vad Kanslio faktiskt sparar åt kansliet</div>
-        </div>
-      </div>
-
-      <div class="time-hero reveal">
-        <div class="time-hero-icon">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-        </div>
-        <div class="time-hero-text">
-          <div class="time-hero-value tabular" data-format="int" id="heroHours">0<span class="unit"> timmar</span></div>
-          <div class="time-hero-sub" id="heroSub">sparade denna månad</div>
-          <div class="time-hero-since" id="heroSince"></div>
-        </div>
-      </div>
-
-      <div class="stat-grid" id="statistikGrid">
-        <!-- stat cards injected by JS -->
-      </div>
-
-      <div class="card card-pad">
-        <div class="card-head"><h2>Tid sparad per vecka, senaste 8 veckorna</h2></div>
-        <div class="chart-svg-wrap" id="timeSavedWrap">
-          <svg id="timeSavedChart" viewBox="0 0 520 220" width="100%" height="220" role="img" aria-label="Trend över tid sparad de senaste åtta veckorna"></svg>
-          <div class="chart-tooltip" id="timeSavedTooltip"></div>
-        </div>
-        <div class="insight" id="timeSavedInsight"></div>
-      </div>
-    </section>
-
-    <!-- RAPPORTER -->
-    <section class="view" id="view-rapporter">
-      <div class="page-head">
-        <div>
-          <h1>Rapporter</h1>
-          <div class="sub">Juli 2026 · hur ärendeflödet ser ut just nu</div>
-        </div>
-      </div>
-
-      <div class="report-grid">
-        <div class="card card-pad">
-          <div class="card-head"><h2>Ärenden per status</h2></div>
-          <div id="statusBars"></div>
-          <div class="insight"><b>24 ärenden är öppna</b> just nu — de flesta (11) pågår aktivt, 7 väntar på klientsvar.</div>
-        </div>
-
-        <div class="card card-pad">
-          <div class="card-head"><h2>Avslutade ärenden, senaste 8 veckorna</h2></div>
-          <div class="chart-svg-wrap" id="trendWrap">
-            <svg id="trendChart" viewBox="0 0 520 220" width="100%" height="220" role="img" aria-label="Trend över avslutade ärenden de senaste åtta veckorna"></svg>
-            <div class="chart-tooltip" id="trendTooltip"></div>
-          </div>
-          <div class="insight">Kansliet avslutade <b>18 ärenden</b> denna vecka — <b>12 % snabbare</b> handläggning än i juni.</div>
-        </div>
-      </div>
-    </section>
-
     <!-- MITT KANSLIO -->
     <section class="view" id="view-mitt-kanslio">
       <div class="page-head">
@@ -1580,6 +1459,30 @@
           </div>
           <div id="teamAccessTable"></div>
         </div>
+      </div>
+
+      <div class="time-hero reveal">
+        <div class="time-hero-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        </div>
+        <div class="time-hero-text">
+          <div class="time-hero-value tabular" data-format="int" id="heroHours">0<span class="unit"> timmar</span></div>
+          <div class="time-hero-sub" id="heroSub">sparade denna månad</div>
+          <div class="time-hero-since" id="heroSince"></div>
+        </div>
+      </div>
+
+      <div class="stat-grid" id="statistikGrid">
+        <!-- stat cards injected by JS -->
+      </div>
+
+      <div class="card card-pad reveal">
+        <div class="card-head"><h2>Tid sparad per vecka, senaste 8 veckorna</h2></div>
+        <div class="chart-svg-wrap" id="timeSavedWrap">
+          <svg id="timeSavedChart" viewBox="0 0 520 220" width="100%" height="220" role="img" aria-label="Trend över tid sparad de senaste åtta veckorna"></svg>
+          <div class="chart-tooltip" id="timeSavedTooltip"></div>
+        </div>
+        <div class="insight" id="timeSavedInsight"></div>
       </div>
 
       <div class="report-grid">
@@ -1851,20 +1754,6 @@
 (() => {
   const STATUS_LABEL = { ny: 'Ny', pagar: 'Pågår', vantar: 'Väntar svar', klar: 'Klar' };
 
-  const CASES = [
-    { title: 'Medlemsansökan – familjen Berg (U10)', client: 'Innebandysektionen', status: 'pagar', assignee: 'Erik Söderberg', initials: 'ES', deadline: '24 jul' },
-    { title: 'Hallbokning – vårsäsongen', client: 'Västerås kommun', status: 'vantar', assignee: 'Maria Lindqvist', initials: 'ML', deadline: '25 jul' },
-    { title: 'Försäkringsärende – skada, P14', client: 'Föräldragrupp P14', status: 'ny', assignee: 'Erik Söderberg', initials: 'ES', deadline: '26 jul' },
-    { title: 'Sponsoravtal – förnyelse', client: 'Byggmax lokal', status: 'pagar', assignee: 'Johan Ahlgren', initials: 'JA', deadline: '28 jul' },
-    { title: 'Bidragsansökan – aktivitetsstöd', client: 'Västerås kommun', status: 'klar', assignee: 'Maria Lindqvist', initials: 'ML', deadline: '20 jul' },
-    { title: 'Materialbeställning – matchtröjor dam', client: 'Sportlagret AB', status: 'vantar', assignee: 'Johan Ahlgren', initials: 'JA', deadline: '30 jul' },
-    { title: 'Domarschema – höstens seriespel', client: 'Fotbollssektionen', status: 'pagar', assignee: 'Erik Söderberg', initials: 'ES', deadline: '1 aug' },
-    { title: 'Ledarutbildning – anmälan', client: 'SISU Idrottsutbildarna', status: 'ny', assignee: 'Maria Lindqvist', initials: 'ML', deadline: '3 aug' },
-  ];
-
-  function getAttentionCases() {
-    return CASES.filter(c => c.status !== 'klar').slice(0, 5);
-  }
 
   const AGENDA = [
     { time: '09:00', title: 'Möte – hallbokning med kommunen', kind: 'meeting' },
@@ -1882,10 +1771,10 @@
   ];
 
   const STATS = [
-    { key: 'open', label: 'Öppna ärenden', value: 24, unit: '', format: 'int', delta: '+3 sedan igår', deltaType: 'neutral', trend: [14,15,17,16,18,20,24], icon: 'folder', goto: 'arenden' },
-    { key: 'waiting', label: 'Väntar på svar', value: 7, unit: '', format: 'int', delta: '−2 sedan igår', deltaType: 'good', trend: [12,11,10,9,10,8,7], icon: 'clock', goto: 'arenden' },
-    { key: 'closed', label: 'Avslutade denna vecka', value: 18, unit: '', format: 'int', delta: '+5 vs förra veckan', deltaType: 'good', trend: [9,11,8,13,10,14,18], icon: 'check', goto: 'rapporter' },
-    { key: 'time', label: 'Snitt handläggningstid', value: 3.2, unit: 'dagar', format: 'decimal1', delta: '−0,4 dagar', deltaType: 'good', trend: [4.1,3.9,3.8,3.6,3.5,3.3,3.2], icon: 'gauge', goto: 'rapporter' },
+    { key: 'open', label: 'Öppna ärenden', value: 24, unit: '', format: 'int', delta: '+3 sedan igår', deltaType: 'neutral', trend: [14,15,17,16,18,20,24], icon: 'folder' },
+    { key: 'waiting', label: 'Väntar på svar', value: 7, unit: '', format: 'int', delta: '−2 sedan igår', deltaType: 'good', trend: [12,11,10,9,10,8,7], icon: 'clock' },
+    { key: 'closed', label: 'Avslutade denna vecka', value: 18, unit: '', format: 'int', delta: '+5 vs förra veckan', deltaType: 'good', trend: [9,11,8,13,10,14,18], icon: 'check' },
+    { key: 'time', label: 'Snitt handläggningstid', value: 3.2, unit: 'dagar', format: 'decimal1', delta: '−0,4 dagar', deltaType: 'good', trend: [4.1,3.9,3.8,3.6,3.5,3.3,3.2], icon: 'gauge' },
   ];
 
   const INVOICE_STATS = [
@@ -1973,19 +1862,6 @@
       draft: 'Underlag för andra kvartalet är på väg — fakturaunderlag och medlemsintäkter sammanställs och skickas över senast fredag denna vecka.' },
   ];
 
-  const STATUS_BREAKDOWN = [
-    { status: 'ny', count: 6, color: 'var(--neutral-dot)' },
-    { status: 'pagar', count: 11, color: 'var(--accent)' },
-    { status: 'vantar', count: 7, color: 'var(--warn)' },
-    { status: 'klar', count: 41, color: 'var(--good)' },
-  ];
-
-  const WEEKLY_TREND = [
-    { label: 'v23', value: 9 }, { label: 'v24', value: 11 }, { label: 'v25', value: 8 },
-    { label: 'v26', value: 13 }, { label: 'v27', value: 10 }, { label: 'v28', value: 14 },
-    { label: 'v29', value: 13 }, { label: 'v30', value: 18 },
-  ];
-
   // ---- Statistik: tid Kanslio sparar åt kansliet ----
   const TIME_SAVED_ITEMS = [
     { label: 'Mejl skrivna automatiskt', count: 142, minutesEach: 6, icon: 'mail', goto: 'mejl',
@@ -1994,7 +1870,7 @@
       trend: [2, 6, 10, 14, 18, 23, 28] },
     { label: 'Betalningar matchade automatiskt', count: 86, minutesEach: 4, icon: 'sync', goto: 'fakturor',
       trend: [10, 22, 34, 48, 60, 74, 86] },
-    { label: 'Ärenden bevakade & sorterade', count: 96, minutesEach: 5, icon: 'folder', goto: 'arenden',
+    { label: 'Ärenden bevakade & sorterade', count: 96, minutesEach: 5, icon: 'folder',
       trend: [15, 28, 40, 55, 68, 82, 96] },
   ];
 
@@ -2434,22 +2310,12 @@
       invoiceTitle.textContent = draftCount === 1 ? '1 faktura redo att skickas' : `${draftCount} fakturor redo att skickas`;
     }
 
-    const caseTitle = document.getElementById('todoCaseTitle');
-    const caseSub = document.getElementById('todoCaseSub');
-    if (caseTitle) {
-      const attention = getAttentionCases();
-      caseTitle.textContent = `${attention.length} ärenden kräver uppmärksamhet`;
-      if (caseSub && attention.length > 0) {
-        caseSub.textContent = `Närmast i tid: ${attention[0].title}, ${attention[0].deadline}.`;
-      }
-    }
   }
 
   // ---- Dagens uppdrag: progressbaren kopplad till vad som faktiskt ligger i inkorgen ----
   const MISSION_ICON = {
     mejl: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 7l9 6 9-6"/></svg>',
     faktura: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg>',
-    arende: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>',
   };
 
   function getMissionItems() {
@@ -2459,9 +2325,6 @@
     });
     INVOICES.forEach((inv, i) => {
       if (inv.status === 'pagar') items.push({ type: 'faktura', key: `inv-${i}`, title: inv.title, sub: inv.sub, goto: 'fakturor', idx: i });
-    });
-    CASES.forEach((c, i) => {
-      if (c.status !== 'klar') items.push({ type: 'arende', key: `case-${i}`, title: c.title, sub: c.client, goto: 'arenden', idx: i });
     });
     return items;
   }
@@ -2493,15 +2356,6 @@
     requestAnimationFrame(tick);
   }
 
-  function resolveCase(idx) {
-    const c = CASES[idx];
-    if (!c || c.status === 'klar') return;
-    c.status = 'klar';
-    renderTodoSummary();
-    if (document.getElementById('fullTable')) renderFullTable();
-    renderProgress();
-  }
-
   function renderMissionList() {
     const list = document.getElementById('missionList');
     if (!list) return;
@@ -2517,7 +2371,7 @@
           <div class="mission-row-title">${m.title}</div>
           <div class="mission-row-sub">${m.sub}</div>
         </div>
-        <button class="btn-ghost mission-row-action" type="button">${m.type === 'arende' ? 'Markera klar' : 'Skicka'}</button>
+        <button class="btn-ghost mission-row-action" type="button">Skicka</button>
       </div>`).join('');
 
     list.querySelectorAll('.mission-row').forEach((row) => {
@@ -2529,7 +2383,6 @@
         e.stopPropagation();
         if (item.type === 'mejl') sendMailDraft(item.idx);
         else if (item.type === 'faktura') sendInvoiceDraft(item.idx);
-        else if (item.type === 'arende') resolveCase(item.idx);
       });
     });
   }
@@ -3027,24 +2880,6 @@ Kansliet, Västerås SK</div>
       </div>`).join('');
   }
 
-  function renderFullTable(filterStatus = 'alla', query = '') {
-    const q = query.trim().toLowerCase();
-    const rows = CASES.filter(c =>
-      (filterStatus === 'alla' || c.status === filterStatus) &&
-      (q === '' || c.title.toLowerCase().includes(q) || c.client.toLowerCase().includes(q))
-    );
-    document.getElementById('fullTable').innerHTML = rows.map((c, idx) => `
-      <div class="full-row reveal" ${revealDelay(idx)}>
-        <div class="case-title">${c.title}</div>
-        <div class="case-client">${c.client}</div>
-        <div>${statusChip(c.status)}</div>
-        <div class="assignee"><span class="mini-avatar">${c.initials}</span>${c.assignee}</div>
-        <div class="case-deadline tabular">${c.deadline}</div>
-      </div>`).join('');
-    document.getElementById('tableEmpty').style.display = rows.length ? 'none' : 'block';
-    observeReveals();
-  }
-
   function renderTeamAccess() {
     document.getElementById('teamAccessTable').innerHTML = TEAM_MEMBERS.map((m, idx) => `
       <div class="full-row reveal" ${revealDelay(idx)}>
@@ -3308,19 +3143,6 @@ Kansliet, Västerås SK</div>
     });
   }
 
-  function renderStatusBars() {
-    const max = Math.max(...STATUS_BREAKDOWN.map(s => s.count));
-    document.getElementById('statusBars').innerHTML = STATUS_BREAKDOWN.map((s, idx) => `
-      <div class="bar-row reveal" ${revealDelay(idx)}>
-        <div class="name">${STATUS_LABEL[s.status]}</div>
-        <div class="bar-track"><div class="bar-fill" style="width:0%; background:${s.color};" data-width="${(s.count / max * 100).toFixed(1)}"></div></div>
-        <div class="count tabular">${s.count}</div>
-      </div>`).join('');
-    requestAnimationFrame(() => {
-      document.querySelectorAll('.bar-fill').forEach(el => { el.style.width = el.dataset.width + '%'; });
-    });
-  }
-
   function renderTrendChart(svgId, tooltipId, wrapId, data, tooltipLabel) {
     const svg = document.getElementById(svgId);
     const tooltip = document.getElementById(tooltipId);
@@ -3418,23 +3240,6 @@ Kansliet, Västerås SK</div>
     const btns = [...document.querySelectorAll('.nav-item[data-view]')];
     btns.forEach(b => b.addEventListener('click', () => activate(b.dataset.view)));
     document.querySelectorAll('[data-goto]').forEach(el => el.addEventListener('click', () => activate(el.dataset.goto)));
-  }
-
-  // ---- Ärenden filters ----
-  function initFilters() {
-    const filters = document.getElementById('statusFilters');
-    let currentStatus = 'alla';
-    filters.addEventListener('click', (e) => {
-      const btn = e.target.closest('.pill-filter');
-      if (!btn) return;
-      filters.querySelectorAll('.pill-filter').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentStatus = btn.dataset.status;
-      renderFullTable(currentStatus, document.getElementById('tableSearch').value);
-    });
-    document.getElementById('tableSearch').addEventListener('input', (e) => {
-      renderFullTable(currentStatus, e.target.value);
-    });
   }
 
   // ---- Kalender nav ----
@@ -3573,9 +3378,6 @@ Kansliet, Västerås SK</div>
   safe(renderTimeSaved);
   safe(renderAgenda);
   safe(renderActivity);
-  safe(renderFullTable);
-  safe(renderStatusBars);
-  safe(() => renderTrendChart('trendChart', 'trendTooltip', 'trendWrap', WEEKLY_TREND, d => `${d.label}: ${d.value} avslutade`));
   safe(() => renderTrendChart('timeSavedChart', 'timeSavedTooltip', 'timeSavedWrap', TIME_SAVED_WEEKLY, d => `${d.label}: ${d.value} tim sparade`));
   safe(renderWeek);
   safe(initMissionBaseline);
@@ -3595,7 +3397,6 @@ Kansliet, Västerås SK</div>
   safe(initFAQ);
   safe(initManageSubscription);
   safe(initTabs);
-  safe(initFilters);
   safe(initWeekNav);
   safe(initChat);
   safe(initTheme);
