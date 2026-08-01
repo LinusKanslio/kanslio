@@ -1772,20 +1772,51 @@
       <div class="card-head" style="margin-top:18px;"><h2>Förslag på nya tider</h2></div>
       <div id="alertSuggestionsList"></div>
 
-      <div class="form-actions">
-        <button class="btn-ghost" type="button" data-back-alert>Stäng</button>
-        <button class="btn-primary" type="button" id="draftCancelMailBtn">Skapa mejlutkast om inställd träning</button>
-      </div>
+      <div class="card-head" style="margin-top:18px;"><h2>Vad vill du göra?</h2></div>
+
+      <button class="sub-option" type="button" id="draftCancelMailBtn">
+        <div class="sub-option-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>
+        </div>
+        <div class="sub-option-body">
+          <div class="sub-option-title">Skicka mejl om inställd träning</div>
+          <div class="sub-option-desc">Meddela föräldragruppen att passen ställs in, med förslag på ersättningstid.</div>
+        </div>
+        <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+
+      <button class="sub-option" type="button" id="draftNewTimeMailBtn">
+        <div class="sub-option-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/><path d="M9 15l2 2 4-4"/></svg>
+        </div>
+        <div class="sub-option-body">
+          <div class="sub-option-title">Skicka mejl om ny tid</div>
+          <div class="sub-option-desc">Meddela föräldragruppen att träningen flyttas till en bekräftad ny tid.</div>
+        </div>
+        <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+
+      <button class="sub-option" type="button" id="dismissAlertBtn">
+        <div class="sub-option-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="10" cy="6" r="3.5"/><path d="M22 20v-2a4 4 0 00-3-3.87M15.5 2.63A3.5 3.5 0 0117.5 9.5"/></svg>
+        </div>
+        <div class="sub-option-body">
+          <div class="sub-option-title">Tack, vi kontaktar de drabbade manuellt</div>
+          <div class="sub-option-desc">Stäng ärendet utan att Kanslio skickar något mejl.</div>
+        </div>
+        <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
     </div>
 
     <div class="sub-done" id="alertDoneState" hidden>
       <div class="sub-done-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
       </div>
-      <div class="sub-done-title">Mejlutkastet är klart</div>
-      <div class="sub-done-text">Ligger nu under Mejl, redo att granska och skicka till föräldragruppen.</div>
+      <div class="sub-done-title" id="alertDoneTitle"></div>
+      <div class="sub-done-text" id="alertDoneText"></div>
       <div class="form-actions" style="justify-content:center; margin-top:16px;">
-        <button class="btn-primary" type="button" data-goto="mejl" data-close>Visa i Mejl</button>
+        <button class="btn-primary" type="button" id="alertDoneCloseBtn">Stäng</button>
+        <button class="btn-primary" type="button" id="alertDoneMailBtn" data-goto="mejl">Visa i Mejl</button>
       </div>
     </div>
   </div>
@@ -2403,7 +2434,7 @@
           <div class="todo-title">${alert.title}</div>
           <div class="todo-sub">${alert.sub}</div>
         </div>
-        <button class="btn-primary" type="button" id="viewAlertBtn" data-alert-id="${alert.id}">Visa förslag</button>
+        <button class="btn-primary" type="button" id="viewAlertBtn" data-alert-id="${alert.id}">Hantera</button>
       </div>`;
   }
 
@@ -3282,11 +3313,14 @@ Kansliet, Västerås SK</div>
     const rowContainer = document.getElementById('scheduleAlertRow');
     if (!overlay || !rowContainer) return;
 
+    let currentAlertId = null;
+
     function closeModal() { overlay.classList.remove('open'); }
 
     function openModal(alertId) {
       const alert = SCHEDULE_ALERTS.find(a => a.id === alertId);
       if (!alert) return;
+      currentAlertId = alertId;
 
       document.getElementById('alertModalTitle').textContent = alert.title;
       document.getElementById('alertModalSource').textContent = alert.sourceLabel;
@@ -3304,9 +3338,25 @@ Kansliet, Västerås SK</div>
 
       document.getElementById('alertQuestionState').hidden = false;
       document.getElementById('alertDoneState').hidden = true;
-      document.getElementById('draftCancelMailBtn').dataset.alertId = alert.id;
 
       overlay.classList.add('open');
+    }
+
+    function showDone(title, text, withMail) {
+      document.getElementById('alertQuestionState').hidden = true;
+      document.getElementById('alertDoneTitle').textContent = title;
+      document.getElementById('alertDoneText').textContent = text;
+      document.getElementById('alertDoneMailBtn').style.display = withMail ? '' : 'none';
+      document.getElementById('alertDoneCloseBtn').style.display = withMail ? 'none' : '';
+      document.getElementById('alertDoneState').hidden = false;
+    }
+
+    function resolveAlert() {
+      const alert = SCHEDULE_ALERTS.find(a => a.id === currentAlertId);
+      if (!alert) return null;
+      alert.resolved = true;
+      renderScheduleAlerts();
+      return alert;
     }
 
     rowContainer.addEventListener('click', (e) => {
@@ -3316,13 +3366,13 @@ Kansliet, Västerås SK</div>
     });
 
     document.getElementById('alertModalClose').addEventListener('click', closeModal);
-    overlay.querySelectorAll('[data-back-alert]').forEach(btn => btn.addEventListener('click', closeModal));
-    overlay.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', closeModal));
+    document.getElementById('alertDoneCloseBtn').addEventListener('click', closeModal);
+    document.getElementById('alertDoneMailBtn').addEventListener('click', closeModal);
     overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
-    document.getElementById('draftCancelMailBtn').addEventListener('click', (e) => {
-      const alert = SCHEDULE_ALERTS.find(a => a.id === e.currentTarget.dataset.alertId);
+    document.getElementById('draftCancelMailBtn').addEventListener('click', () => {
+      const alert = SCHEDULE_ALERTS.find(a => a.id === currentAlertId);
       if (!alert) return;
       const best = alert.suggestions[0];
       const otherLines = alert.suggestions.slice(1).map(s => `${s.day} kl. ${s.time} (${s.note.toLowerCase()})`).join(', ');
@@ -3336,14 +3386,37 @@ Kansliet, Västerås SK</div>
         draft: `Hej!\n\nBjörkhallen är tyvärr stängd för akut takreparation, vilket gör att ${alert.team}s träning ${datesList} blir inställd.\n\nVi föreslår istället ${best.day} kl. ${best.time} (${best.note.toLowerCase()}) som ersättning. Andra lediga alternativ är ${otherLines}, hör av er om något av dessa passar bättre.\n\nBeklagar krånglet och hör av oss så snart hallen öppnar igen.`,
       });
 
-      alert.resolved = true;
+      resolveAlert();
       renderMail();
       renderTodoSummary();
       renderProgress();
-      renderScheduleAlerts();
+      showDone('Mejlutkastet är klart', 'Ligger nu under Mejl, redo att granska och skicka till föräldragruppen.', true);
+    });
 
-      document.getElementById('alertQuestionState').hidden = true;
-      document.getElementById('alertDoneState').hidden = false;
+    document.getElementById('draftNewTimeMailBtn').addEventListener('click', () => {
+      const alert = SCHEDULE_ALERTS.find(a => a.id === currentAlertId);
+      if (!alert) return;
+      const best = alert.suggestions[0];
+      const datesList = alert.affected.map(a => `${a.day} kl. ${a.time}`).join(' och ');
+
+      MAIL.unshift({
+        from: `Föräldragrupp ${alert.team}`,
+        subject: `Ny tid för ${alert.team}s träning ${alert.affected.map(a => a.day).join(' & ')}`,
+        priority: 'hog',
+        time: new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }),
+        draft: `Hej!\n\nBjörkhallen är tyvärr stängd för akut takreparation, vilket påverkar ${alert.team}s träning ${datesList}.\n\nVi flyttar träningen till ${best.day} kl. ${best.time} (${best.note.toLowerCase()}) istället — notera gärna den nya tiden. Hör av er till kansliet om den inte fungerar för er.\n\nVi beklagar det korta varslet.`,
+      });
+
+      resolveAlert();
+      renderMail();
+      renderTodoSummary();
+      renderProgress();
+      showDone('Mejlutkastet är klart', 'Ligger nu under Mejl, redo att granska och skicka till föräldragruppen.', true);
+    });
+
+    document.getElementById('dismissAlertBtn').addEventListener('click', () => {
+      if (!resolveAlert()) return;
+      showDone('Ärendet är stängt', 'Inget mejlutkast skapades — ni kontaktar de drabbade själva.', false);
     });
   }
 
