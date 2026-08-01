@@ -1169,7 +1169,7 @@
     <section class="view active" id="view-oversikt">
       <div class="page-head">
         <div>
-          <h1>God morgon, Erik</h1>
+          <h1 id="greetingTitle">God morgon, Erik</h1>
           <div class="sub">Onsdag 22 juli 2026 · Kansliet har 24 öppna ärenden just nu</div>
         </div>
         <div style="display:flex; align-items:center; gap:16px;">
@@ -2421,6 +2421,14 @@
     renderProgress();
   }
 
+  function renderGreeting() {
+    const el = document.getElementById('greetingTitle');
+    if (!el) return;
+    const h = new Date().getHours();
+    const part = (h >= 5 && h < 10) ? 'God morgon' : (h >= 10 && h < 17) ? 'God dag' : 'God kväll';
+    el.textContent = `${part}, Erik`;
+  }
+
   function renderScheduleAlerts() {
     const container = document.getElementById('scheduleAlertRow');
     if (!container) return;
@@ -3663,6 +3671,7 @@ Kansliet, Västerås SK</div>
   safe(initMailComposer);
   safe(renderInvoices);
   safe(initInvoiceCreator);
+  safe(renderGreeting);
   safe(renderScheduleAlerts);
   safe(renderTodoSummary);
   safe(renderProgress);
