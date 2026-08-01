@@ -731,6 +731,11 @@
   }
   .feedback-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; }
 
+  .alert-row { display: flex; align-items: center; gap: 14px; padding: 10px 4px; border-bottom: 1px solid var(--border); }
+  .alert-row:last-child { border-bottom: none; }
+  .alert-row-time { font-weight: 700; font-size: 13.5px; color: var(--ink); width: 130px; flex-shrink: 0; }
+  .alert-row-note { font-size: 13px; color: var(--ink-secondary); flex: 1; }
+
   /* ---------- Chat ---------- */
   .chat-launcher {
     position: fixed; bottom: 26px; right: 26px; z-index: 50;
@@ -1192,6 +1197,7 @@
 
       <div class="card card-pad reveal">
         <div class="card-head"><h2>Viktigast idag</h2></div>
+        <div id="scheduleAlertRow"></div>
         <div class="todo-row">
           <div class="todo-icon todo-icon-blue">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 7l9 6 9-6"/></svg>
@@ -1746,6 +1752,45 @@
   </div>
 </div>
 
+<!-- Schemakrock: hall stängd, förslag & mejlutkast -->
+<div class="modal-overlay" id="alertOverlay">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <div>
+        <h2 id="alertModalTitle"></h2>
+        <p id="alertModalSource"></p>
+      </div>
+      <button class="modal-close" id="alertModalClose" aria-label="Stäng">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <div id="alertQuestionState">
+      <div class="card-head"><h2>Träningspass som påverkas</h2></div>
+      <div id="alertAffectedList"></div>
+
+      <div class="card-head" style="margin-top:18px;"><h2>Förslag på nya tider</h2></div>
+      <div id="alertSuggestionsList"></div>
+
+      <div class="form-actions">
+        <button class="btn-ghost" type="button" data-back-alert>Stäng</button>
+        <button class="btn-primary" type="button" id="draftCancelMailBtn">Skapa mejlutkast om inställd träning</button>
+      </div>
+    </div>
+
+    <div class="sub-done" id="alertDoneState" hidden>
+      <div class="sub-done-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <div class="sub-done-title">Mejlutkastet är klart</div>
+      <div class="sub-done-text">Ligger nu under Mejl, redo att granska och skicka till föräldragruppen.</div>
+      <div class="form-actions" style="justify-content:center; margin-top:16px;">
+        <button class="btn-primary" type="button" data-goto="mejl" data-close>Visa i Mejl</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Chat -->
 <button class="chat-launcher" id="chatLauncher" aria-label="Öppna assistent" aria-expanded="false">
   <span class="badge"></span>
@@ -1872,7 +1917,32 @@
     ]},
   ];
 
+  // ---- Mejl → kalender-koppling: Kanslio läser inkommande mejl mot schemat
+  // och flaggar krockar med förslag på nya tider, se renderScheduleAlerts() ----
+  const SCHEDULE_ALERTS = [
+    {
+      id: 'bjorkhallen-21-23-jul',
+      title: 'Björkhallen stängd 21 & 23 juli — 2 träningspass påverkas',
+      sub: 'Innebandy P14 · upptäckt i mejlet från Västerås kommun · förslag på nya tider redo',
+      sourceLabel: 'Från mejlet: Västerås kommun, Fritidsförvaltningen — "Björkhallen stängd för akut takreparation – 21 & 23 juli"',
+      team: 'Innebandy P14',
+      affectedCount: 16,
+      affected: [
+        { day: 'Tis 21 jul', time: '18:00', note: 'Innebandy P14 – träning i Björkhallen' },
+        { day: 'Tor 23 jul', time: '18:00', note: 'Innebandy P14 – träning i Björkhallen' },
+      ],
+      suggestions: [
+        { day: 'Mån 20 jul', time: '19:30', note: 'Ledig lucka i Björkhallen, direkt efter Herrlaget A' },
+        { day: 'Ons 22 jul', time: '20:00', note: 'Kvällstid, ingen krock med övriga lag' },
+        { day: 'Fre 24 jul', time: '17:30', note: 'Ledig lucka innan Damlaget A:s träning' },
+      ],
+      resolved: false,
+    },
+  ];
+
   const MAIL = [
+    { from: 'Västerås kommun, Fritidsförvaltningen', subject: 'Björkhallen stängd för akut takreparation – 21 & 23 juli', priority: 'hog', time: '04:02',
+      draft: 'Vi vill informera om att Björkhallen är stängd för akut takreparation tisdag 21 juli och torsdag 23 juli. Vi beklagar det korta varslet och återkommer så snart hallen är öppen igen — hör gärna av er om ni behöver hjälp att hitta en ersättningstid.' },
     { from: 'Familjen Berg', subject: 'Fråga om medlemsavgift och startdatum', priority: 'hog', time: '03:12',
       draft: 'Hej! Tack för er anmälan av Elin till U10 — avgiften är 800 kr/termin och faktureras via Kanslio i samband med säsongsstart den 12 augusti. Ni får en påminnelse i god tid innan förfallodatum. Välkomna till klubben!' },
     { from: 'Västerås kommun, Fritidsförvaltningen', subject: 'Bekräftelse hallbokning vecka 34', priority: 'hog', time: '03:19',
@@ -2319,6 +2389,24 @@
     renderProgress();
   }
 
+  function renderScheduleAlerts() {
+    const container = document.getElementById('scheduleAlertRow');
+    if (!container) return;
+    const alert = SCHEDULE_ALERTS.find(a => !a.resolved);
+    if (!alert) { container.innerHTML = ''; return; }
+    container.innerHTML = `
+      <div class="todo-row">
+        <div class="todo-icon todo-icon-amber">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+        </div>
+        <div class="todo-text">
+          <div class="todo-title">${alert.title}</div>
+          <div class="todo-sub">${alert.sub}</div>
+        </div>
+        <button class="btn-primary" type="button" id="viewAlertBtn" data-alert-id="${alert.id}">Visa förslag</button>
+      </div>`;
+  }
+
   function renderTodoSummary() {
     const mailTitle = document.getElementById('todoMailTitle');
     const mailSub = document.getElementById('todoMailSub');
@@ -2350,10 +2438,10 @@
   function getMissionItems() {
     const items = [];
     MAIL.forEach((m, i) => {
-      if (!m.sent) items.push({ type: 'mejl', key: `mail-${i}`, title: m.from, sub: m.subject, goto: 'mejl', idx: i });
+      if (!m.sent) items.push({ type: 'mejl', key: `mail-${m.from}-${m.subject}`, title: m.from, sub: m.subject, goto: 'mejl', idx: i });
     });
     INVOICES.forEach((inv, i) => {
-      if (inv.status === 'pagar') items.push({ type: 'faktura', key: `inv-${i}`, title: inv.title, sub: inv.sub, goto: 'fakturor', idx: i });
+      if (inv.status === 'pagar') items.push({ type: 'faktura', key: `inv-${inv.title}`, title: inv.title, sub: inv.sub, goto: 'fakturor', idx: i });
     });
     return items;
   }
@@ -3189,6 +3277,76 @@ Kansliet, Västerås SK</div>
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
   }
 
+  function initScheduleAlerts() {
+    const overlay = document.getElementById('alertOverlay');
+    const rowContainer = document.getElementById('scheduleAlertRow');
+    if (!overlay || !rowContainer) return;
+
+    function closeModal() { overlay.classList.remove('open'); }
+
+    function openModal(alertId) {
+      const alert = SCHEDULE_ALERTS.find(a => a.id === alertId);
+      if (!alert) return;
+
+      document.getElementById('alertModalTitle').textContent = alert.title;
+      document.getElementById('alertModalSource').textContent = alert.sourceLabel;
+      document.getElementById('alertAffectedList').innerHTML = alert.affected.map(a => `
+        <div class="alert-row">
+          <div class="alert-row-time">${a.day}, ${a.time}</div>
+          <div class="alert-row-note">${a.note}</div>
+          <span class="status-chip status-vantar"><span class="dot"></span>Inställd</span>
+        </div>`).join('');
+      document.getElementById('alertSuggestionsList').innerHTML = alert.suggestions.map(s => `
+        <div class="alert-row">
+          <div class="alert-row-time">${s.day}, ${s.time}</div>
+          <div class="alert-row-note">${s.note}</div>
+        </div>`).join('');
+
+      document.getElementById('alertQuestionState').hidden = false;
+      document.getElementById('alertDoneState').hidden = true;
+      document.getElementById('draftCancelMailBtn').dataset.alertId = alert.id;
+
+      overlay.classList.add('open');
+    }
+
+    rowContainer.addEventListener('click', (e) => {
+      const btn = e.target.closest('#viewAlertBtn');
+      if (!btn) return;
+      openModal(btn.dataset.alertId);
+    });
+
+    document.getElementById('alertModalClose').addEventListener('click', closeModal);
+    overlay.querySelectorAll('[data-back-alert]').forEach(btn => btn.addEventListener('click', closeModal));
+    overlay.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', closeModal));
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    document.getElementById('draftCancelMailBtn').addEventListener('click', (e) => {
+      const alert = SCHEDULE_ALERTS.find(a => a.id === e.currentTarget.dataset.alertId);
+      if (!alert) return;
+      const best = alert.suggestions[0];
+      const otherLines = alert.suggestions.slice(1).map(s => `${s.day} kl. ${s.time} (${s.note.toLowerCase()})`).join(', ');
+      const datesList = alert.affected.map(a => `${a.day} kl. ${a.time}`).join(' och ');
+
+      MAIL.unshift({
+        from: `Föräldragrupp ${alert.team}`,
+        subject: `Inställd träning ${alert.affected.map(a => a.day).join(' & ')} p.g.a. hallstängning`,
+        priority: 'hog',
+        time: new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }),
+        draft: `Hej!\n\nBjörkhallen är tyvärr stängd för akut takreparation, vilket gör att ${alert.team}s träning ${datesList} blir inställd.\n\nVi föreslår istället ${best.day} kl. ${best.time} (${best.note.toLowerCase()}) som ersättning. Andra lediga alternativ är ${otherLines}, hör av er om något av dessa passar bättre.\n\nBeklagar krånglet och hör av oss så snart hallen öppnar igen.`,
+      });
+
+      alert.resolved = true;
+      renderMail();
+      renderTodoSummary();
+      renderProgress();
+      renderScheduleAlerts();
+
+      document.getElementById('alertQuestionState').hidden = true;
+      document.getElementById('alertDoneState').hidden = false;
+    });
+  }
+
   function renderTrendChart(svgId, tooltipId, wrapId, data, tooltipLabel) {
     const svg = document.getElementById(svgId);
     const tooltip = document.getElementById(tooltipId);
@@ -3431,6 +3589,7 @@ Kansliet, Västerås SK</div>
   safe(initMailComposer);
   safe(renderInvoices);
   safe(initInvoiceCreator);
+  safe(renderScheduleAlerts);
   safe(renderTodoSummary);
   safe(renderProgress);
   safe(initMissionToggle);
@@ -3443,6 +3602,7 @@ Kansliet, Västerås SK</div>
   safe(initFAQ);
   safe(initManageSubscription);
   safe(initStatsOverview);
+  safe(initScheduleAlerts);
   safe(initTabs);
   safe(initWeekNav);
   safe(initChat);
